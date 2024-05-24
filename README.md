@@ -1,6 +1,6 @@
 
 <br />
-<p align="left">
+<p align="center">
     <a href="https://upsun.com">
         <img src="https://upsun.com/logos/logo_vertical.svg" alt="logo" width="150px">
     </a>
