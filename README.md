@@ -238,3 +238,7 @@ To install FrankenPHP only once on your project:
 ```shell
 curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-frankenphp.sh | { bash /dev/fd/3 5.1.1 ; } 3<&0
 ```
+
+### Blackfire notifier (Activity script)
+This [activity script](src/blackfire-notifier.js) creates an event Marker on Blackfire side. 
+This script is meant to be integrated with your Upsun project.
