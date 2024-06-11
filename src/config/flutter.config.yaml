@@ -1,0 +1,44 @@
+applications:    
+    gallery:
+        variables:
+            env:
+                FLUTTER_VERSION_DL: "3.22.2"
+        source:
+            root: "gallery"
+        type: "nodejs:20"
+        hooks:
+            build: |
+                set -eux
+
+                curl -s \
+                    https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_$FLUTTER_VERSION_DL-stable.tar.xz \
+                    -o flutter.tar.xz
+                tar -xf $PLATFORM_APP_DIR/flutter.tar.xz -C .
+                export PATH="$PLATFORM_APP_DIR/flutter/bin:$PATH"
+
+                flutter build web
+
+        web:
+            locations:
+                /:
+                    root: build/web
+                    index:
+                        - index.html
+                    expires: 2m
+                    scripts: false
+                    allow: true
+                    rules:
+                        static\/*:
+                            expires: 365d
+
+routes:
+    "https://{default}/":
+        id: gallery
+        type: upstream
+        primary: true
+        upstream: "gallery:http"
+
+    "https://www.{default}":
+        id: gallery-redirect
+        type: redirect
+        to: "https://{default}/"
