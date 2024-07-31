@@ -32,7 +32,7 @@ async function checkProjectStatus() {
         Notiflix.Loading.custom(
             'A new deployment of the application has been triggered, please wait for the app to be back. This should take a few.',
             {
-                customSvgUrl: 'https://raw.githubusercontent.com/upsun/snippets/main/images/anim_shadok_01.gif',
+                customSvgUrl: 'https://raw.githubusercontent.com/upsun/snippets/main/src/images/anim_shadok_01.gif',
                 svgSize: '400px',
                 backgroundColor: 'rgba(0,0,0,0.8)',
                 messageMaxLength: 300,
