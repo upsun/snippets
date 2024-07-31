@@ -1,8 +1,9 @@
 // please customize these values
 const projectId = 'abcdef12345'; // Status Holder projectId
+const statusHolderEndpoint = 'https://www.example.com'; // Status Holder uri
 const environment = 'main';
 const interval = 2000; // 2sec
-const apiEndpoint = 'StatusHolderUri' + '/api/'; // Status Holder uri
+const apiEndpoint = statusHolderEndpoint + '/api/';
 
 /**
  * Function that checks project status and displays a Notiflix banner if a deployment is in progress.
@@ -21,7 +22,7 @@ async function checkProjectStatus() {
     });
 
     if (!response.ok) {
-        // do something
+        // do something ...
     }
 
     const body = await response.json();
@@ -31,7 +32,7 @@ async function checkProjectStatus() {
         Notiflix.Loading.custom(
             'A new deployment of the application has been triggered, please wait for the app to be back. This should take a few.',
             {
-                customSvgUrl: 'https://raw.githubusercontent.com/upsun/infrasctucture-notif/main/assets/images/anim_shadok_01.gif',
+                customSvgUrl: 'https://raw.githubusercontent.com/upsun/snippets/main/images/anim_shadok_01.gif',
                 svgSize: '400px',
                 backgroundColor: 'rgba(0,0,0,0.8)',
                 messageMaxLength: 300,
