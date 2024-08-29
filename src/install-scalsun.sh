@@ -78,11 +78,11 @@ download_binary() {
 
 get_asset_id() {
   
-   ASSET_ID=curl --silent -L \
+   ASSET_ID=$(curl --silent -L \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $GITHUB_API_TOKEN" \                                                                                                 
     https://api.github.com/repos/upsun/$UPSUN_PROJECT/releases \
-    | jq 'map(select(.name == "$VERSION")) | .[0].assets | map(select(.name == "$BINARY_NAME")) | .[].id'
+    | jq 'map(select(.name == "$VERSION")) | .[0].assets | map(select(.name == "$BINARY_NAME")) | .[].id')
     
     echo "assetID = $ASSET_ID";
 }
