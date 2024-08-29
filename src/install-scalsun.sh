@@ -60,7 +60,7 @@ download_binary() {
    
    BINARY_NAME="$UPSUN_PROJECT-$UPSUN_VERSION-linux-amd64.tar.gz"
    
-   get_asset_id $BINARY_NAME
+   get_asset_id
    
    echo "assetId $ASSET_ID"
    
@@ -77,9 +77,8 @@ download_binary() {
 }
 
 get_asset_id() {
-  BINARY_NAME=$1;
   
-  ASSET_ID=curl --silent -L \
+   ASSET_ID=curl --silent -L \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $GITHUB_API_TOKEN" \                                                                                                 
     https://api.github.com/repos/upsun/$UPSUN_PROJECT/releases \
