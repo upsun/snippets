@@ -53,12 +53,12 @@ ensure_source() {
 
 download_binary() {
    echo "---------------------------------------------------------------------"
-   echo " Downloading UPSUN_PROJECT binary source code "
+   echo " Downloading $UPSUN_PROJECT binary source code "
    echo "---------------------------------------------------------------------"
    UPSUN_PROJECT=$1;
    UPSUN_VERSION=$2;
    
-   BINARY_NAME="$UPSUN_PROJECT-v$UPSUN_VERSION-linux-amd64.tar.gz"
+   BINARY_NAME="$UPSUN_PROJECT-$UPSUN_VERSION-linux-amd64.tar.gz"
    
    ASSET_ID=get_asset_id $BINARY_NAME
    
@@ -72,7 +72,6 @@ download_binary() {
    echo "Success" 
 }
 
-
 get_asset_id() {
   BINARY_NAME=$1;
   
@@ -80,7 +79,7 @@ get_asset_id() {
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $GITHUB_API_TOKEN" \                                                                                                 
     https://api.github.com/repos/upsun/$UPSUN_PROJECT/releases \
-    | jq 'map(select(.name == "v$VERSION")) | .[0].assets | map(select(.name == "$BINARY_NAME")) | .[].id'
+    | jq 'map(select(.name == "$VERSION")) | .[0].assets | map(select(.name == "$BINARY_NAME")) | .[].id'
     
     echo "assetID = $ASSET_ID";
 }
