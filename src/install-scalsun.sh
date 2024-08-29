@@ -61,6 +61,7 @@ download_binary() {
    BINARY_NAME="$UPSUN_PROJECT-$UPSUN_VERSION-linux-amd64.tar.gz"
    
    ASSET_ID=get_asset_id $BINARY_NAME
+   echo "assetId $ASSET_ID"
    
    curl -L \
      -H "Accept: application/octet-stream" \
