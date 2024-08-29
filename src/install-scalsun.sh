@@ -12,7 +12,7 @@ run() {
 
    UPSUN_BINARY="${UPSUN_PROJECT}"
 
-   rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
+   #DEBUG rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
 
    if [ ! -f "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}" ]; then
        ensure_source "$UPSUN_PROJECT" "$UPSUN_VERSION";
