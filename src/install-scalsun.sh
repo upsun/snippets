@@ -67,8 +67,9 @@ download_binary() {
      -H "Authorization: Bearer $GITHUB_API_TOKEN" \
      "https://api.github.com/repos/upsun/scalsun/releases/assets/$ASSET_ID" \
      -o $BINARY_NAME 
-   
-   tar -xzf $BINARY_NAME
+   pwd
+   ls -la
+   tar -xvf $BINARY_NAME
 
    echo "Success" 
 }
