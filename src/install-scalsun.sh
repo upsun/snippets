@@ -66,8 +66,9 @@ download_binary() {
      -H "Accept: application/octet-stream" \
      -H "Authorization: Bearer $GITHUB_API_TOKEN" \
      "https://api.github.com/repos/upsun/scalsun/releases/assets/$ASSET_ID" \
-     -o $BINARY_NAME \
-     | tar -xzf $BINARY_NAME -c ${PLATFORM_CACHE_DIR}/${UPSUN_PROJECT}/${UPSUN_VERSION}/${UPSUN_PROJECT}
+     -o $BINARY_NAME 
+   
+   tar -xzf $BINARY_NAME
 
    echo "Success" 
 }
