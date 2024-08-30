@@ -85,6 +85,8 @@ get_asset_id() {
     -H "Authorization: Bearer $GITHUB_API_TOKEN" "https://api.github.com/repos/upsun/$UPSUN_PROJECT/releases" \
     | jq 'map(select(.name == "$VERSION")) | .[0].assets | map(select(.name == "$BINARY_NAME")) | .[].id')
     
+    echo "Authorization: Bearer $GITHUB_API_TOKEN" "https://api.github.com/repos/upsun/$UPSUN_PROJECT/releases"
+    
     echo "assetID = $ASSET_ID";
 }
 
