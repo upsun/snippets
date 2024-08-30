@@ -14,7 +14,7 @@ run() {
 
    UPSUN_BINARY="${UPSUN_PROJECT}"
 
-   #DEBUG rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
+   rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
 
    if [ ! -f "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}" ]; then
        ensure_source "$UPSUN_PROJECT" "$UPSUN_VERSION";
@@ -34,8 +34,8 @@ copy_lib() {
    UPSUN_PROJECT=$1;
    UPSUN_BINARY=$2;
 
-   cp "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}/${UPSUN_PROJECT}" "${PLATFORM_APP_DIR}/${UPSUN_PROJECT}";
-   cd ${PLATFORM_APP_DIR};
+   cp "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}/${UPSUN_PROJECT}" "${PLATFORM_APP_DIR}/bin/${UPSUN_PROJECT}";
+   cd ${PLATFORM_APP_DIR}/bin;
    chmod +x ${UPSUN_PROJECT};
    echo "Success"
 }
@@ -71,8 +71,6 @@ download_binary() {
      -H "Authorization: Bearer $GITHUB_API_TOKEN" \
      "https://api.github.com/repos/upsun/scalsun/releases/assets/$ASSET_ID" \
      -o $BINARY_NAME 
-   pwd
-   ls -la
    tar -xvf $BINARY_NAME
 
    echo "Success" 
