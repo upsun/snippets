@@ -96,7 +96,7 @@ move_binary() {
    echo "-----------------------------------------------------"
    UPSUN_PROJECT=$1;
    UPSUN_BINARY=$2;
-   cp "${PLATFORM_CACHE_DIR}/${UPSUN_PROJECT}/${UPSUN_VERSION}/${UPSUN_PROJECT}" "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}";
+   cp -r "${PLATFORM_CACHE_DIR}/${UPSUN_PROJECT}/${UPSUN_VERSION}/${UPSUN_PROJECT}" "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}";
    chmod +x "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}";
    echo "Success"
 }
