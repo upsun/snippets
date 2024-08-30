@@ -14,10 +14,9 @@ run() {
 
    UPSUN_BINARY="${UPSUN_PROJECT}"
 
-   #DEBUG rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
+   rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
 
    if [ ! -f "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}" ]; then
-       #mkdir -p "$PLATFORM_APP_DIR/bin"
        ensure_source "$UPSUN_PROJECT" "$UPSUN_VERSION";
        download_binary "$UPSUN_PROJECT" "$UPSUN_VERSION";
        move_binary "$UPSUN_PROJECT" "$UPSUN_BINARY";
@@ -72,7 +71,7 @@ download_binary() {
    curl -L \
      -H "Accept: application/octet-stream" \
      -H "Authorization: Bearer $GITHUB_API_TOKEN" \
-     "https://api.github.com/repos/upsun/scalsun/releases/assets/$ASSET_ID" \
+     "https://api.github.com/repos/upsun/$TOOL/releases/assets/$ASSET_ID" \
      -o $BINARY_NAME 
    tar -xvf $BINARY_NAME
   pwd 
@@ -111,10 +110,17 @@ ensure_environment() {
    fi
 }
 
+if [ -z "$1" ]; then
+  echo "Please define parameter for the tool you want to install: scalsun, provsun, ... ";
+  echo "See https://github.com/upsun --> '***sun' repos ";
+else 
+  TOOL=$1;
+fi
+
 ensure_environment
-# Get Latest version from Upsun scalsun repo
+# Get Latest version from Upsun $TOOL repo
 VERSION=$(curl --silent -H "Authorization: token $GITHUB_API_TOKEN" \
   -H 'Accept: application/vnd.github.v3.raw' \
-  -L https://api.github.com/repos/upsun/scalsun/tags | jq -r '.[0].name');
+  -L https://api.github.com/repos/upsun/$TOOL/tags | jq -r '.[0].name');
   
-run "scalsun" "$VERSION"
+run "$TOOL" "$VERSION"
