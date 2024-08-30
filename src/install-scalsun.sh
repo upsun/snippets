@@ -83,7 +83,7 @@ get_asset_id() {
    ASSET_ID=$(curl --silent -L \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $GITHUB_API_TOKEN" "https://api.github.com/repos/upsun/$UPSUN_PROJECT/releases" \
-    | jq -r --arg VERSION $VERSION --arg BINARY_NAME $BINARY_NAME 'map(select(.name == "$VERSION")) | .[0].assets | map(select(.name == "$BINARY_NAME")) | .[].id')
+    | jq -r --arg VERSION "$VERSION" --arg BINARY_NAME "$BINARY_NAME" 'map(select(.name==$VERSION)) | .[0].assets | map(select(.name==$BINARY_NAME)) | .[].id')
     
     echo "Authorization: Bearer $GITHUB_API_TOKEN" "https://api.github.com/repos/upsun/$UPSUN_PROJECT/releases"
     
