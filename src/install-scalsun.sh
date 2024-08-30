@@ -14,9 +14,10 @@ run() {
 
    UPSUN_BINARY="${UPSUN_PROJECT}"
 
-   rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
+   #DEBUG rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
 
    if [ ! -f "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}" ]; then
+       mkdir -p "$PLATFORM_APP_DIR/bin"
        ensure_source "$UPSUN_PROJECT" "$UPSUN_VERSION";
        download_binary "$UPSUN_PROJECT" "$UPSUN_VERSION";
        move_binary "$UPSUN_PROJECT" "$UPSUN_BINARY";
@@ -49,7 +50,6 @@ ensure_source() {
    UPSUN_VERSION=$2;
 
    mkdir -p "$PLATFORM_CACHE_DIR/$UPSUN_PROJECT/$UPSUN_VERSION";
-   mkdir -p "$PLATFORM_APP_DIR/bin"
    
    cd "$PLATFORM_CACHE_DIR/$UPSUN_PROJECT/$UPSUN_VERSION" || exit 1;
    echo "Success"
@@ -66,6 +66,7 @@ download_binary() {
    
    get_asset_id
    
+  ls -la 
    echo "assetId $ASSET_ID"
    
    curl -L \
@@ -74,7 +75,8 @@ download_binary() {
      "https://api.github.com/repos/upsun/scalsun/releases/assets/$ASSET_ID" \
      -o $BINARY_NAME 
    tar -xvf $BINARY_NAME
-
+  pwd 
+  ls -la 
    echo "Success" 
 }
 
