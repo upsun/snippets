@@ -49,6 +49,8 @@ ensure_source() {
    UPSUN_VERSION=$2;
 
    mkdir -p "$PLATFORM_CACHE_DIR/$UPSUN_PROJECT/$UPSUN_VERSION";
+   mkdir -p "$PLATFORM_APP_DIR/bin"
+   
    cd "$PLATFORM_CACHE_DIR/$UPSUN_PROJECT/$UPSUN_VERSION" || exit 1;
    echo "Success"
 }
