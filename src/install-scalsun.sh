@@ -3,6 +3,8 @@
 # contributors:
 #  - Florent HUCK <florent.huck@platform.sh>
 
+ASSET_ID='';
+
 run() {
    # Run the compilation process.
    cd $PLATFORM_CACHE_DIR || exit 1;
