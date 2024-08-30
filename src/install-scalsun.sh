@@ -17,7 +17,7 @@ run() {
    #DEBUG rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
 
    if [ ! -f "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}" ]; then
-       mkdir -p "$PLATFORM_APP_DIR/bin"
+       #mkdir -p "$PLATFORM_APP_DIR/bin"
        ensure_source "$UPSUN_PROJECT" "$UPSUN_VERSION";
        download_binary "$UPSUN_PROJECT" "$UPSUN_VERSION";
        move_binary "$UPSUN_PROJECT" "$UPSUN_BINARY";
@@ -35,8 +35,8 @@ copy_lib() {
    UPSUN_PROJECT=$1;
    UPSUN_BINARY=$2;
 
-   cp "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}/${UPSUN_PROJECT}" "${PLATFORM_APP_DIR}/bin/${UPSUN_PROJECT}";
-   cd ${PLATFORM_APP_DIR}/bin;
+   cp "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}/${UPSUN_PROJECT}" "${PLATFORM_APP_DIR}/${UPSUN_PROJECT}";
+   cd ${PLATFORM_APP_DIR};
    chmod +x ${UPSUN_PROJECT};
    echo "Success"
 }
