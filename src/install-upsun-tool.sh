@@ -32,8 +32,10 @@ copy_lib() {
    UPSUN_TOOL=$1;
    UPSUN_BINARY=$2;
 
+   mkdir -p foo/bar/baz
    cp "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}/${UPSUN_TOOL}" "${PLATFORM_APP_DIR}/bin/${UPSUN_TOOL}";
    cd ${PLATFORM_APP_DIR}/bin;
+   ls -la 
    chmod +x ${UPSUN_TOOL};
    echo "Success"
 }
