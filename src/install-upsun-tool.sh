@@ -34,7 +34,7 @@ copy_lib() {
    UPSUN_TOOL=$1;
    UPSUN_BINARY=$2;
 
-   mkdir -p foo/bar/baz
+   mkdir -p ${PLATFORM_APP_DIR}/bin
    cp "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}/${UPSUN_TOOL}" "${PLATFORM_APP_DIR}/bin/${UPSUN_TOOL}";
    cd ${PLATFORM_APP_DIR}/bin;
    chmod +x ${UPSUN_TOOL};
@@ -111,7 +111,6 @@ echo "ensure env " + $TOOL;
 ensure_environment
 
 echo "install CLi";
-
 
 # Install Upsun CLI as all of the tools need it 
 curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
