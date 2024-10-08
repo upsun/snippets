@@ -64,7 +64,6 @@ download_binary() {
    
    curl -L \
      -H "Accept: application/octet-stream" \
-     -H "Authorization: Bearer $GITHUB_API_TOKEN" \
      "https://api.github.com/repos/upsun/scalsun/releases/assets/$ASSET_ID" \
      -o $BINARY_NAME \
      | tar -xzf - -c ${UPSUN_PROJECT}
@@ -77,8 +76,7 @@ get_asset_id() {
   BINARY_NAME=$1;
   
   ASSET_ID=curl --silent -L \
-    -H "Accept: application/vnd.github+json" \
-    -H "Authorization: Bearer $GITHUB_API_TOKEN" \                                                                                                 
+    -H "Accept: application/vnd.github+json" \                                                                                               
     https://api.github.com/repos/upsun/$UPSUN_PROJECT/releases \
     | jq 'map(select(.name == "v$VERSION")) | .[0].assets | map(select(.name == "$BINARY_NAME")) | .[].id'
     
@@ -106,8 +104,9 @@ ensure_environment() {
 
 ensure_environment
 # Get Latest version from Upsun scalsun repo
-VERSION=$(curl --silent -H "Authorization: token $GITHUB_API_TOKEN" \
+VERSION=$(curl --silent \
   -H 'Accept: application/vnd.github.v3.raw' \
   -L https://api.github.com/repos/upsun/scalsun/tags | jq -r '.[0].name');
-  
+
+echo $VERSION 
 run "scalsun" "$VERSION"
