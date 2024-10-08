@@ -65,9 +65,8 @@ download_binary() {
    get_asset_id
    
    curl -L \
-     -H "Accept: application/octet-stream" \
-     "https://api.github.com/repos/upsun/$TOOL/releases/assets/$ASSET_ID" \
-     -o $BINARY_NAME 
+     -H "Accept: application/octet-stream" "https://api.github.com/repos/upsun/$TOOL/releases/assets/$ASSET_ID" \
+     -o $BINARY_NAME
    tar -xvf $BINARY_NAME
 
    echo "Success" 
@@ -75,8 +74,7 @@ download_binary() {
 
 get_asset_id() {  
    ASSET_ID=$(curl --silent -L \
-    -H "Accept: application/vnd.github+json" \
-    "https://api.github.com/repos/upsun/$UPSUN_TOOL/releases" \
+    -H "Accept: application/vnd.github+json" "https://api.github.com/repos/upsun/$UPSUN_TOOL/releases" \
     | jq -r --arg BINARY_NAME "$BINARY_NAME" '.[0].assets | map(select(.name==$BINARY_NAME)) | .[].id')
 }
 
@@ -106,14 +104,14 @@ else
   TOOL=$1;
 fi
 
-echo "ensure env "
+echo "ensure env ";
 ensure_environment
 
-echo "install CLi "
+echo "install CLi";
 
 
 # Install Upsun CLI as all of the tools need it 
-curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
+#curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
 
 echo "install CLi success"
 # Get Latest version from Upsun $TOOL repo
