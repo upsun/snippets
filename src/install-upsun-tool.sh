@@ -77,7 +77,7 @@ get_asset_id() {
    ASSET_ID=$(curl --silent -L \
     -H "Accept: application/vnd.github+json" \
     "https://api.github.com/repos/upsun/$UPSUN_TOOL/releases" \
-    | jq -r --arg VERSION "$VERSION" --arg BINARY_NAME "$BINARY_NAME" 'map(select(.name==$VERSION)) | .[0].assets | map(select(.name==$BINARY_NAME)) | .[].id')
+    | jq -r --arg BINARY_NAME "$BINARY_NAME" '.[0].assets | map(select(.name==$BINARY_NAME)) | .[].id')
 }
 
 move_binary() {
@@ -106,6 +106,7 @@ else
   TOOL=$1;
 fi
 
+echo "ensure env "
 ensure_environment
 
 echo "install CLi "
