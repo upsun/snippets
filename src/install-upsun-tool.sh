@@ -111,9 +111,9 @@ ensure_environment
 # Install Upsun CLI as all of the tools need it 
 curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
 
+echo "install CLi "
 # Get Latest version from Upsun $TOOL repo
-VERSION=$(curl --silent \
-  -H 'Accept: application/vnd.github.v3.raw' \
+VERSION=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
   -L https://api.github.com/repos/upsun/$TOOL/tags | jq -r '.[0].name');
   
 echo "version:" + $VERSION 
