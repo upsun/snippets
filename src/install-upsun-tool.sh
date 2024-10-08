@@ -66,7 +66,6 @@ download_binary() {
    
    curl -L \
      -H "Accept: application/octet-stream" \
-     -H "Authorization: Bearer $GITHUB_API_TOKEN" \
      "https://api.github.com/repos/upsun/$TOOL/releases/assets/$ASSET_ID" \
      -o $BINARY_NAME 
    tar -xvf $BINARY_NAME
@@ -77,7 +76,7 @@ download_binary() {
 get_asset_id() {  
    ASSET_ID=$(curl --silent -L \
     -H "Accept: application/vnd.github+json" \
-    -H "Authorization: Bearer $GITHUB_API_TOKEN" "https://api.github.com/repos/upsun/$UPSUN_TOOL/releases" \
+    "https://api.github.com/repos/upsun/$UPSUN_TOOL/releases" \
     | jq -r --arg VERSION "$VERSION" --arg BINARY_NAME "$BINARY_NAME" 'map(select(.name==$VERSION)) | .[0].assets | map(select(.name==$BINARY_NAME)) | .[].id')
 }
 
@@ -113,7 +112,7 @@ ensure_environment
 curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
 
 # Get Latest version from Upsun $TOOL repo
-VERSION=$(curl --silent -H "Authorization: token $GITHUB_API_TOKEN" \
+VERSION=$(curl --silent \
   -H 'Accept: application/vnd.github.v3.raw' \
   -L https://api.github.com/repos/upsun/$TOOL/tags | jq -r '.[0].name');
   
