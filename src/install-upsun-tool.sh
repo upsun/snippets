@@ -104,7 +104,8 @@ else
   TOOL=$1;
 fi
 
-echo "ensure env ";
+echo "ensure env " + $TOOL;
+return;
 ensure_environment
 
 echo "install CLi";
