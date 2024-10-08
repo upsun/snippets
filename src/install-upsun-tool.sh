@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-upsun-tool.sh | bash /dev/stdin "scalsun" 
+# usage : curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-upsun-tool.sh | bash /dev/stdin "scalsun" 
 
 # contributors:
 #  - Florent HUCK <florent.huck@platform.sh>
@@ -106,19 +106,13 @@ else
   TOOL=$1;
 fi
 
-echo "ensure env " + $TOOL;
-#return;
 ensure_environment
-
-echo "install CLi";
 
 # Install Upsun CLI as all of the tools need it 
 curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
 
-echo "install CLi success"
 # Get Latest version from Upsun $TOOL repo
 VERSION=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
   -L https://api.github.com/repos/upsun/$TOOL/tags | jq -r '.[0].name');
   
-echo "version:" + $VERSION 
 run "$TOOL" "$VERSION"
