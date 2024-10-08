@@ -1,4 +1,6 @@
-# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-upsun-tool.sh | bash /dev/stdin "scalsun" 
+#!/bin/bash
+
+# usage : curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-upsun-tool.sh | bash /dev/stdin "scalsun" 
 
 # contributors:
 #  - Florent HUCK <florent.huck@platform.sh>
@@ -32,7 +34,7 @@ copy_lib() {
    UPSUN_TOOL=$1;
    UPSUN_BINARY=$2;
 
-   mkdir -p foo/bar/baz
+   mkdir -p ${PLATFORM_APP_DIR}/bin
    cp "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}/${UPSUN_TOOL}" "${PLATFORM_APP_DIR}/bin/${UPSUN_TOOL}";
    cd ${PLATFORM_APP_DIR}/bin;
    chmod +x ${UPSUN_TOOL};
@@ -65,10 +67,8 @@ download_binary() {
    get_asset_id
    
    curl -L \
-     -H "Accept: application/octet-stream" \
-     -H "Authorization: Bearer $GITHUB_API_TOKEN" \
-     "https://api.github.com/repos/upsun/$TOOL/releases/assets/$ASSET_ID" \
-     -o $BINARY_NAME 
+     -H "Accept: application/octet-stream" "https://api.github.com/repos/upsun/$TOOL/releases/assets/$ASSET_ID" \
+     -o $BINARY_NAME
    tar -xvf $BINARY_NAME
 
    echo "Success" 
@@ -76,9 +76,8 @@ download_binary() {
 
 get_asset_id() {  
    ASSET_ID=$(curl --silent -L \
-    -H "Accept: application/vnd.github+json" \
-    -H "Authorization: Bearer $GITHUB_API_TOKEN" "https://api.github.com/repos/upsun/$UPSUN_TOOL/releases" \
-    | jq -r --arg VERSION "$VERSION" --arg BINARY_NAME "$BINARY_NAME" 'map(select(.name==$VERSION)) | .[0].assets | map(select(.name==$BINARY_NAME)) | .[].id')
+    -H "Accept: application/vnd.github+json" "https://api.github.com/repos/upsun/$UPSUN_TOOL/releases" \
+    | jq -r --arg BINARY_NAME "$BINARY_NAME" '.[0].assets | map(select(.name==$BINARY_NAME)) | .[].id')
 }
 
 move_binary() {
@@ -113,8 +112,7 @@ ensure_environment
 curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
 
 # Get Latest version from Upsun $TOOL repo
-VERSION=$(curl --silent -H "Authorization: token $GITHUB_API_TOKEN" \
-  -H 'Accept: application/vnd.github.v3.raw' \
+VERSION=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
   -L https://api.github.com/repos/upsun/$TOOL/tags | jq -r '.[0].name');
   
 run "$TOOL" "$VERSION"
