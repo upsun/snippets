@@ -116,4 +116,5 @@ VERSION=$(curl --silent \
   -H 'Accept: application/vnd.github.v3.raw' \
   -L https://api.github.com/repos/upsun/$TOOL/tags | jq -r '.[0].name');
   
+echo "version:" + $VERSION 
 run "$TOOL" "$VERSION"
