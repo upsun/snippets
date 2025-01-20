@@ -4,7 +4,6 @@
 
 # contributors:
 #  - Florent HUCK <florent.huck@platform.sh>
-set -e
   
 run() {
    # Run the compilation process.
@@ -108,6 +107,8 @@ ensure_environment() {
    fi
 }
 
+
+set -e
 if [ -z "$1" ]; then
   echo "Please define parameter for the tool you want to install: pandoc, ... ";
   echo "See https://github.com/jgm ";
