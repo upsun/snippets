@@ -69,8 +69,9 @@ download_binary() {
    UPSUN_VERSION=$2;
 
    BINARY_NAME="$UPSUN_TOOL-$UPSUN_VERSION-linux-amd64.tar.gz"
-
    get_asset_id
+   
+   echo "https://api.github.com/repos/jgm/$TOOL/releases/assets/$ASSET_ID"
 
    curl -L \
      -H "Accept: application/octet-stream" "https://api.github.com/repos/jgm/$TOOL/releases/assets/$ASSET_ID" \
@@ -122,11 +123,12 @@ ensure_environment
 
 # Get Latest version from Upsun $TOOL repo
 VERSION=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
-  -L https://api.github.com/repos/jgm/$TOOL/tags | jq -r '.[0].name');
+  -L https://api.github.com/repos/jgm/$TOOL/releases | jq -r '.[0].name');
 
 # FHK override
-VERSION="3.5"
 echo "version found is $VERSION"
+VERSION="3.5"
+echo "VERSION"
 run "$TOOL" "$VERSION"
 
 #!/usr/bin/env bash
