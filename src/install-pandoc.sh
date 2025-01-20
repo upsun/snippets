@@ -3,8 +3,9 @@
 # usage : curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-pandoc.sh | bash /dev/stdin "pandoc"
 
 # contributors:
+
 #  - Florent HUCK <florent.huck@platform.sh>
-  
+
 run() {
    # Run the compilation process.
    cd $PLATFORM_CACHE_DIR || exit 1;
