@@ -34,10 +34,6 @@ copy_lib() {
    UPSUN_BINARY=$2;
 
    mkdir -p ${PLATFORM_APP_DIR}/bin
-
-   ls -la ${PLATFORM_CACHE_DIR}/
-   ls -la ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
-
    cp -r "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}/${UPSUN_BINARY}" "${PLATFORM_APP_DIR}/bin";
    cd ${PLATFORM_APP_DIR}/bin;
    chmod +x "${UPSUN_TOOL}";
@@ -68,18 +64,12 @@ download_binary() {
    BINARY_NAME="$UPSUN_TOOL-$UPSUN_VERSION-linux-amd64.tar.gz"
    get_asset_id
    
-   echo "https://api.github.com/repos/jgm/$TOOL/releases/assets/$ASSET_ID"
-
    curl -L \
      -H "Accept: application/octet-stream" "https://api.github.com/repos/jgm/$TOOL/releases/assets/$ASSET_ID" \
      -o $BINARY_NAME
    tar -xvf $BINARY_NAME
 
    echo "Success"
-   echo "BINARY_NAME is $BINARY_NAME; ASSET_ID is $ASSET_ID"
-   echo "https://api.github.com/repos/jgm/$TOOL/releases/assets/$ASSET_ID"
-   pwd
-   ls -la
 }
 
 get_asset_id() {
@@ -123,16 +113,7 @@ VERSION=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
   -L https://api.github.com/repos/jgm/$TOOL/releases | jq -r '.[0].tag_name');
 
 # FHK override
-echo "version found is $VERSION"
+echo "Latest $TOOL version found is $VERSION"
 run "$TOOL" "$VERSION"
 
-#!/usr/bin/env bash
-
-# Treat individual build step errors as fatal for the whole build process.
-
-## install Pandoc https://pandoc.org/installing.html#linux
-#$PLATFORM_APP_DIR/bin/pandoc $PLATFORM_APP_DIR/sites/upsun/public/llms.txt --from=html -o $PLATFORM_APP_DIR/sites/upsun/public/llms.txt.md -t markdown
-#ls -la $PLATFORM_APP_DIR/sites/upsun/public/
-#mv $PLATFORM_APP_DIR/sites/upsun/public/llms.txt $PLATFORM_APP_DIR/sites/upsun/public/llms.txt.old
-#mv $PLATFORM_APP_DIR/sites/upsun/public/llms.txt.md $PLATFORM_APP_DIR/sites/upsun/public/llms.txt
-#ls -la $PLATFORM_APP_DIR/sites/upsun/public/
+pandoc -v
