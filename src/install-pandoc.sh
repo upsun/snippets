@@ -1,10 +1,7 @@
 #!/bin/bash
 
 # usage : curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-pandoc.sh | bash /dev/stdin "pandoc"
-
 # contributors:
-
-
 #  - Florent HUCK <florent.huck@platform.sh>
 
 run() {
@@ -135,7 +132,7 @@ run "$TOOL" "$VERSION"
 
 ## install Pandoc https://pandoc.org/installing.html#linux
 #$PLATFORM_APP_DIR/bin/pandoc $PLATFORM_APP_DIR/sites/upsun/public/llms.txt --from=html -o $PLATFORM_APP_DIR/sites/upsun/public/llms.txt.md -t markdown
-ls -la $PLATFORM_APP_DIR/sites/upsun/public/
-mv $PLATFORM_APP_DIR/sites/upsun/public/llms.txt $PLATFORM_APP_DIR/sites/upsun/public/llms.txt.old
-mv $PLATFORM_APP_DIR/sites/upsun/public/llms.txt.md $PLATFORM_APP_DIR/sites/upsun/public/llms.txt
-ls -la $PLATFORM_APP_DIR/sites/upsun/public/
+#ls -la $PLATFORM_APP_DIR/sites/upsun/public/
+#mv $PLATFORM_APP_DIR/sites/upsun/public/llms.txt $PLATFORM_APP_DIR/sites/upsun/public/llms.txt.old
+#mv $PLATFORM_APP_DIR/sites/upsun/public/llms.txt.md $PLATFORM_APP_DIR/sites/upsun/public/llms.txt
+#ls -la $PLATFORM_APP_DIR/sites/upsun/public/
