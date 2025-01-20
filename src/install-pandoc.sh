@@ -115,5 +115,3 @@ VERSION=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
 # FHK override
 echo "Latest $TOOL version found is $VERSION"
 run "$TOOL" "$VERSION"
-
-pandoc -v
