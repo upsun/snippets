@@ -13,9 +13,9 @@ run() {
 
    UPSUN_BINARY="${UPSUN_TOOL}"
 
-   rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
+   #rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
 
-   if [ ! -f "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}" ]; then
+   if [ ! -f "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}/${UPSUN_BINARY}" ]; then
        ensure_source "$UPSUN_TOOL" "$UPSUN_VERSION";
        download_binary "$UPSUN_TOOL" "$UPSUN_VERSION";
        move_binary "$UPSUN_TOOL" "$UPSUN_BINARY";
