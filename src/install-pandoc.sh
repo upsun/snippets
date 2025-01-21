@@ -1,6 +1,8 @@
 #!/bin/bash
-
-# usage : curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-pandoc.sh | bash /dev/stdin "pandoc"
+# This script install pandoc in the $PLATFORM_APP_DIR/bin folder
+# installation in the hooks.build of your Upsun/Platform.sh project: 
+# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-pandoc.sh | bash
+# then execute pandoc: bin/pandoc -v 
 # contributors:
 #  - Florent HUCK <florent.huck@platform.sh>
 
@@ -11,30 +13,26 @@ run() {
    UPSUN_TOOL=$1;
    UPSUN_VERSION=$2;
 
-   UPSUN_BINARY="${UPSUN_TOOL}"
-
-   #rm -Rf ${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}
-
-   if [ ! -f "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}/${UPSUN_BINARY}" ]; then
+   if [ ! -f "${PLATFORM_CACHE_DIR}/${UPSUN_TOOL}/${UPSUN_VERSION}/${UPSUN_TOOL}-${UPSUN_VERSION}/bin/${UPSUN_TOOL}" ]; then
        ensure_source "$UPSUN_TOOL" "$UPSUN_VERSION";
        download_binary "$UPSUN_TOOL" "$UPSUN_VERSION";
-       move_binary "$UPSUN_TOOL" "$UPSUN_BINARY";
+       move_binary "$UPSUN_TOOL" "$UPSUN_VERSION";
    fi
 
-   copy_lib "$UPSUN_TOOL" "$UPSUN_BINARY";
+   copy_lib "$UPSUN_TOOL" "$UPSUN_VERSION";
    echo "$UPSUN_TOOL installation successful"
 }
 
 copy_lib() {
    echo "------------------------------------------------"
-   echo " Copying compiled extension to PLATFORM_APP_DIR "
+   echo " Copying compiled extension from PLATFORM_CACHE_DIR to PLATFORM_APP_DIR "
    echo "------------------------------------------------"
 
    UPSUN_TOOL=$1;
-   UPSUN_BINARY=$2;
+   UPSUN_VERSION=$2;
 
    mkdir -p ${PLATFORM_APP_DIR}/bin
-   cp -r "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}/${UPSUN_BINARY}" "${PLATFORM_APP_DIR}/bin";
+   cp -r "${PLATFORM_CACHE_DIR}/${UPSUN_TOOL}/${UPSUN_TOOL}" "${PLATFORM_APP_DIR}/bin";
    cd ${PLATFORM_APP_DIR}/bin;
    chmod +x "${UPSUN_TOOL}";
    echo "Success"
@@ -42,7 +40,7 @@ copy_lib() {
 
 ensure_source() {
    echo "-----------------------------------------------------------------------------------"
-   echo " Ensuring that the $UPSUN_TOOL binary folder is available and up to date "
+   echo " Ensuring that the $UPSUN_TOOL/$UPSUN_VERSION binary folder is available and up to date "
    echo "-----------------------------------------------------------------------------------"
 
    UPSUN_TOOL=$1;
@@ -63,7 +61,7 @@ download_binary() {
 
    BINARY_NAME="$UPSUN_TOOL-$UPSUN_VERSION-linux-amd64.tar.gz"
    get_asset_id
-   
+      
    curl -L \
      -H "Accept: application/octet-stream" "https://api.github.com/repos/jgm/$TOOL/releases/assets/$ASSET_ID" \
      -o $BINARY_NAME
@@ -83,9 +81,10 @@ move_binary() {
    echo " Moving and caching ${UPSUN_TOOL} binary "
    echo "-----------------------------------------------------"
    UPSUN_TOOL=$1;
-   UPSUN_BINARY=$2;
+   UPSUN_VERSION=$2;
+   
+   # copy new version in cache
    cp -r "${PLATFORM_CACHE_DIR}/${UPSUN_TOOL}/${UPSUN_VERSION}/${UPSUN_TOOL}-${UPSUN_VERSION}/bin/${UPSUN_TOOL}" "${PLATFORM_CACHE_DIR}/${UPSUN_TOOL}";
-   chmod +x "${PLATFORM_CACHE_DIR}/${UPSUN_BINARY}";
    echo "Success"
 }
 
@@ -97,20 +96,17 @@ ensure_environment() {
    fi
 }
 
+get_latest_version() {
+  # Get Latest version from jqm $TOOL repo
+  VERSION=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
+    -L https://api.github.com/repos/jgm/$TOOL/releases | jq -r '.[0].tag_name');
+}
 
 set -e
-if [ -z "$1" ]; then
-  echo "Please define parameter for the tool you want to install: pandoc, ... ";
-  echo "See https://github.com/jgm ";
-else
-  TOOL=$1;
-fi
 
+TOOL="pandoc";
 ensure_environment
-
-# Get Latest version from Upsun $TOOL repo
-VERSION=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
-  -L https://api.github.com/repos/jgm/$TOOL/releases | jq -r '.[0].tag_name');
+get_latest_version
 
 # FHK override
 echo "Latest $TOOL version found is $VERSION"
