@@ -1,0 +1,45 @@
+# Set database environment variables
+export DB_HOST="$POSTGRESQL_HOST"
+export DB_PORT="$POSTGRESQL_PORT"
+export DB_PATH="$POSTGRESQL_PATH"
+export DB_USERNAME="$POSTGRESQL_USERNAME"
+export DB_PASSWORD="$POSTGRESQL_PASSWORD"
+export DB_SCHEME="postgresql"
+export DATABASE_URL="${DB_SCHEME}://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_PATH}"
+export DATABASE_NAME="${DB_PATH}"
+export DATABASE_POOL_SIZE=5
+
+# Set Cache environment variables
+export CACHE_HOST="$REDIS_PERSISTENT_HOST"
+export CACHE_PORT="$REDIS_PERSISTENT_PORT"
+export CACHE_SCHEME="$REDIS_PERSISTENT_SCHEME"
+export CACHE_URL="${CACHE_SCHEME}://${CACHE_HOST}:${CACHE_PORT}"
+export REDIS_URL="${CACHE_URL}"
+
+PRIMARY_URL=$(echo $PLATFORM_ROUTES | base64 --decode | jq -r 'to_entries[] | select(.value.primary == true) | .key')
+export APP_DOMAIN=$(echo "${PRIMARY_URL}" | awk -F '[/:]' '{print $4}')
+export APP_PROTOCOL="https://"
+
+export FOREM_OWNER_SECRET=$PLATFORM_PROJECT_ENTROPY
+export SECRET_KEY_BASE=$PLATFORM_PROJECT_ENTROPY
+
+export RAILS_ENV="${PLATFORM_ENVIRONMENT_TYPE}"
+export NODE_ENV="${PLATFORM_ENVIRONMENT_TYPE}"
+
+export RAILS_MAX_THREADS=5
+export WEB_CONCURRENCY=2
+
+export COMMUNITY_NAME="Up(sun) and Running with Forem"
+
+export DEFAULT_EMAIL="upsun.user@upsun.com"
+
+export RACK_TIMEOUT_WAIT_TIMEOUT=100_000
+export RACK_TIMEOUT_SERVICE_TIMEOUT=100_000
+
+export SESSION_KEY="_Dev_Community_Session"
+# two weeks in seconds
+export SESSION_EXPIRY_SECONDS=1209600
+
+export HONEYBADGER_API_KEY="testing"
+export HONEYBADGER_JS_API_KEY="testing"
+export HONEYBADGER_REPORT_DATA=false
