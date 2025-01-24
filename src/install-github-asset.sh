@@ -8,7 +8,7 @@
 run() {
    # Run the compilation process.
    cd $PLATFORM_CACHE_DIR || exit 1;
-   echo "TOOL_VERSION is $TOOL_TOOL_VERSION";
+   echo "TOOL_VERSION is $TOOL_VERSION";
    if [ ! -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" ]; then
        ensure_source 
        download_binary;
@@ -112,4 +112,4 @@ else
   TOOL_VERSION=$2
 fi
 
-run
+run $GITHUB_ORG $TOOL_NAME $TOOL_VERSION
