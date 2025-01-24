@@ -1,30 +1,11 @@
 #!/bin/bash
 # This generic script install a $GITHUB_ORG/$TOOL_NAME (corresponding asset) in the $PLATFORM_APP_DIR/bin folder of your app container
 # in the hooks.build of your Upsun/Platform.sh configuration: 
-# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin "jgm/pandoc" [<version>] 
+# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin "jgm/pandoc" "[<version>]" 
 # contributors:
 #  - Florent HUCK <florent.huck@platform.sh>
 
 run() {
-   set -e
-   # check if we are on an Upsun/Platform.sh 
-   ensure_environment
-   
-   # Get first parameter as the Github identifier: <org>/<repo>
-   if [ -z "$1" ]; then
-     echo "Please define 1st parameter for the Github organization and the repository where to find the tool: jgm/pandoc, ... ";
-   else   
-     GITHUB_ORG=$(echo "$1" | awk -F '/' '{print $1}');
-     TOOL_NAME=$(echo "$1" | awk -F '/' '{print $2}');
-   fi
-   
-   if [ -z "$2" ]; then
-     get_latest_version
-   else
-     echo "You define a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
-     TOOL_VERSION=$2
-   fi
-
    # Run the compilation process.
    cd $PLATFORM_CACHE_DIR || exit 1;
    
@@ -99,6 +80,8 @@ ensure_environment() {
    if [ -z "${PLATFORM_CACHE_DIR}" ]; then
        echo "Not running in an Upsun/Platform.sh build environment. Aborting $TOOL_NAME installation.";
        exit 0;
+   else 
+     echo "On an Upsun/Platform.sh environment";
    fi
 }
 
@@ -108,4 +91,28 @@ get_latest_version() {
     -L https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases | jq -r '.[0].tag_name');
 }
 
-run $1
+# check if we are on an Upsun/Platform.sh 
+ensure_environment;
+
+echo $1;
+echo $2;
+
+# Get first parameter as the Github identifier: <org>/<repo>
+if [ -z "$1" ]; then
+  echo "Please define first parameter for the Github organization and the repository where to find the tool: jgm/pandoc, ... ";
+else   
+  GITHUB_ORG=$(echo "$1" | awk -F '/' '{print $1}');
+  TOOL_NAME=$(echo "$1" | awk -F '/' '{print $2}');
+fi
+
+if [ -z "$2" ]; then
+  echo "$2 is not defined"
+  get_latest_version
+else
+  echo "You define a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
+  TOOL_VERSION=$2
+fi
+
+echo "tool version: $TOOL_VERSION"
+   
+run
