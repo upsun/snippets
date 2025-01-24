@@ -49,7 +49,9 @@ download_binary() {
    echo "--------------------------------------------------------------------------------------"
    
    BINARY_NAME="$TOOL_NAME-$TOOL_VERSION-linux-amd64.tar.gz"
+   echo $BINARY_NAME
    get_asset_id
+   echo "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID"
    
    curl -L \
      -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID" \
@@ -113,6 +115,4 @@ else
   TOOL_VERSION=$2
 fi
 
-echo "tool version: $TOOL_VERSION"
-   
 run
