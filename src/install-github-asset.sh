@@ -22,7 +22,7 @@ run() {
 
 copy_lib() {
    echo "--------------------------------------------------------------------------------------"
-   echo " Copying $TOOL_NAME asset from PLATFORM_CACHE_DIR to PLATFORM_APP_DIR "
+   echo " Copying $TOOL_NAME version $TOOL_VERSION asset from PLATFORM_CACHE_DIR to PLATFORM_APP_DIR "
    echo "--------------------------------------------------------------------------------------"
 
    mkdir -p ${PLATFORM_APP_DIR}/bin
@@ -112,4 +112,4 @@ else
   TOOL_VERSION=$2
 fi
 
-run $GITHUB_ORG $TOOL_NAME $TOOL_VERSION
+run 
