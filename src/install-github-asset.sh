@@ -64,7 +64,8 @@ download_binary() {
 get_asset_id() {
    ASSET_ID=$(curl --silent -L \
     -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" \
-    | jq -r --arg BINARY_NAME "$BINARY_NAME" '.[0].assets | map(select(.name==$BINARY_NAME)) | .[].id')
+    | jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[] | select(.tag_name=="$TOOL_VERSION") | .assets'  \
+    | jq -r --arg BINARY_NAME "$BINARY_NAME" '.[] | select(.name==$BINARY_NAME) | .id');
 }
 
 move_binary() {
