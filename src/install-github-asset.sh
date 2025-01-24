@@ -49,10 +49,9 @@ download_binary() {
    echo "--------------------------------------------------------------------------------------"
    
    BINARY_NAME="$TOOL_NAME-$TOOL_VERSION-linux-amd64.tar.gz"
-   echo $BINARY_NAME
+
    get_asset_id
-   echo "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID"
-   
+      
    curl -L \
      -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID" \
      -o $BINARY_NAME
@@ -64,7 +63,7 @@ download_binary() {
 get_asset_id() {
    ASSET_ID=$(curl --silent -L \
     -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" \
-    | jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[] | select(.tag_name=="$TOOL_VERSION") | .assets'  \
+    | jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[] | select(.tag_name==$TOOL_VERSION) | .assets'  \
     | jq -r --arg BINARY_NAME "$BINARY_NAME" '.[] | select(.name==$BINARY_NAME) | .id');
 }
 
