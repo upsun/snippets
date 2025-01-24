@@ -96,9 +96,6 @@ get_latest_version() {
 # check if we are on an Upsun/Platform.sh 
 ensure_environment;
 
-echo $1;
-echo $2;
-
 # Get first parameter as the Github identifier: <org>/<repo>
 if [ -z "$1" ]; then
   echo "Please define first parameter for the Github organization and the repository where to find the tool: jgm/pandoc, ... ";
@@ -108,7 +105,6 @@ else
 fi
 
 if [ -z "$2" ]; then
-  echo "$2 is not defined"
   get_latest_version
 else
   echo "You define a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
