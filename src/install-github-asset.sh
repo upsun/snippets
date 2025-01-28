@@ -8,7 +8,6 @@
 run() {
    # Run the compilation process.
    cd $PLATFORM_CACHE_DIR || exit 1;
-   echo "TOOL_VERSION is $TOOL_VERSION";
    if [ ! -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" ]; then
        ensure_source 
        download_binary;
@@ -45,7 +44,7 @@ ensure_source() {
 
 download_binary() {
    echo "--------------------------------------------------------------------------------------"
-   echo " Downloading $TOOL_NAME binary source code "
+   echo " Downloading $TOOL_NAME binary (version $TOOL_VERSION) source code "
    echo "--------------------------------------------------------------------------------------"
    
    BINARY_NAME="$TOOL_NAME-$TOOL_VERSION-linux-amd64.tar.gz"
@@ -93,23 +92,37 @@ get_latest_version() {
     -L https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases | jq -r '.[0].tag_name');
 }
 
+check_version_exists() {
+  SELECT_VERSION=$1;
+  # Check if version from GITHUB_ORG/$TOOL repo exists
+  VERSION_FOUNDED=$(curl --silent -L \ 
+    -H 'Accept: application/vnd.github.v3.raw' "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" \
+    | jq -r --arg TOOL_VERSION "$SELECT_VERSION" '.[] | select(.tag_name==$TOOL_VERSION) | .tag_name ');   
+}
+
 # check if we are on an Upsun/Platform.sh 
 ensure_environment;
 
 # Get first parameter as the Github identifier: <org>/<repo>
 if [ -z "$1" ]; then
-  echo "Please define first parameter for the Github organization and the repository where to find the tool: jgm/pandoc, ... ";
-else   
+  echo "Please define first parameter for the Github organization and the repository where to find the tool, ex: jgm/pandoc, ... ";
+else
   GITHUB_ORG=$(echo "$1" | awk -F '/' '{print $1}');
   TOOL_NAME=$(echo "$1" | awk -F '/' '{print $2}');
 fi
 
 if [ -z "$2" ]; then
+  echo "You didn't define a specific version as second parameter for installing $TOOL_NAME, let's get the latest release version of $1"
   get_latest_version
-  echo "Lastest $TOOL_NAME version is $TOOL_VERSION"
+  echo "Latest $TOOL_NAME version found is $TOOL_VERSION"
 else
-  echo "You define a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
-  TOOL_VERSION=$2
+  check_version_exists $2
+  if [ "$VERSION_FOUNDED" -eq "$2" ]; then
+    echo "You fix a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
+    TOOL_VERSION=$2
+  else 
+    echo "Select version for $GITHUB_ORG/$TOOL_NAME ($2) does not exist, please check available release version"
+  fi
 fi
 
 run 
