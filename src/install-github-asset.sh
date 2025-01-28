@@ -127,9 +127,9 @@ else
   fi
 fi
 
-echo "TOOL Version is $TOOL_VERSION";
+echo "debug TOOL Version is $TOOL_VERSION";
 
-if [-z "$TOOL_VERSION"]; then
+if [ -z "$TOOL_VERSION" ] || [ "$TOOL_VERSION" -lt 1 ]; then
   run
 else 
   echo "Error: No valid release version founded for $1, aborting installation."
