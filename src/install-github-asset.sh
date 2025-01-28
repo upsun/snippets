@@ -127,8 +127,8 @@ else
   fi
 fi
 
-if [ -z "$TOOL_VERSION" ] || [ "$TOOL_VERSION" -lt 1 ]; then
-  echo "Error: No valid release version founded for $1, aborting installation."
+if [ -z "$TOOL_VERSION" ]; then
+  echo "Warning: No valid release version founded for $1, aborting installation."
 else 
   run
 fi
