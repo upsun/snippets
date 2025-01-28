@@ -119,7 +119,7 @@ if [ -z "$2" ]; then
   echo "Latest $TOOL_NAME version found is $TOOL_VERSION"
 else
   check_version_exists $2;
-  if [ "$VERSION_FOUNDED" -eq "$2" ]; then
+  if [ $VERSION_FOUNDED == $2 ]; then
     echo "You fix a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
     TOOL_VERSION=$2
   else 
