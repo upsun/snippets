@@ -94,12 +94,10 @@ get_latest_version() {
 
 check_version_exists() {
   SELECTED_VERSION=$1;
-  echo "selected version is $SELECTED_VERSION ";
   # Check if version from GITHUB_ORG/$TOOL repo exists
   VERSION_FOUNDED=$(curl --silent -L \
     -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" \
     | jq -r --arg TOOL_VERSION "$SELECTED_VERSION" '.[] | select(.tag_name==$TOOL_VERSION) | .tag_name ');  
-  echo $VERSION_FOUNDED; 
 }
 
 # check if we are on an Upsun/Platform.sh 
@@ -114,7 +112,7 @@ else
 fi
 
 if [ -z "$2" ]; then
-  echo "You didn't define a specific version as second parameter for installing $TOOL_NAME, let's get the latest release version of $1"
+  echo "You didn't define a specific version (as second parameter) for installing $TOOL_NAME, let's get the latest release version of $1"
   get_latest_version
   echo "Latest $TOOL_NAME version found is $TOOL_VERSION"
 else
@@ -123,8 +121,13 @@ else
     echo "You fix a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
     TOOL_VERSION=$2
   else 
-    echo "Select version for $GITHUB_ORG/$TOOL_NAME ($2) does not exist, please check available release version"
+    echo "Select version for $GITHUB_ORG/$TOOL_NAME ($2) does not exist.";
+    echo "Please check available releases on https://github.com/$GITHUB_ORG/$TOOL_NAME/releases"
   fi
 fi
 
-run 
+if [-n $TOOL_VERSION]; then
+  run
+else 
+  echo "Error: No valid release version founded for $1, aborting installation."
+fi
