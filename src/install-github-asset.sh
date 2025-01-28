@@ -96,7 +96,7 @@ check_version_exists() {
   SELECTED_VERSION=$1;
   echo "selected version is $SELECTED_VERSION ";
   # Check if version from GITHUB_ORG/$TOOL repo exists
-  VERSION_FOUNDED=$(curl --silent -L \ 
+  VERSION_FOUNDED=$(curl --silent -L \
     -H 'Accept: application/vnd.github.v3.raw' "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" \
     | jq -r --arg TOOL_VERSION "$SELECTED_VERSION" '.[] | select(.tag_name=="$TOOL_VERSION") | .tag_name ');  
   echo $VERSION_FOUNDED; 
