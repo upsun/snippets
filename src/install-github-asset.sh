@@ -117,13 +117,13 @@ if [ -z "$2" ]; then
 else
   TOOL_VERSION="$2"
   check_version_exists;
-  if [ "$VERSION_FOUNDED" -eq "$TOOL_VERSION" ]; then
-    echo "You fix a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
-    TOOL_VERSION="$VERSION_FOUNDED"
-  else 
+  if [ -z "$VERSION_FOUNDED" ]; then
     echo "Select version for $GITHUB_ORG/$TOOL_NAME ($2) does not exist.";
     echo "Please check available releases on https://github.com/$GITHUB_ORG/$TOOL_NAME/releases"
     TOOL_VERSION="";
+  else 
+    echo "You fix a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
+    TOOL_VERSION="$VERSION_FOUNDED"
   fi
 fi
 
