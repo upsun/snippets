@@ -39,12 +39,10 @@ download_binary() {
 
    get_asset_id
       
-   pwd 
    curl -L \
      -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID" \
      -o $BINARY_NAME
    tar -xvf $BINARY_NAME
-   ls -la 
 
    echo "Success"
 }
@@ -55,13 +53,6 @@ move_binary() {
    echo "--------------------------------------------------------------------------------------"
    
    # copy new version in cache
-   echo 1
-   ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
-   echo 2
-   ls -la "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}"
-   echo 3
-   ls -la "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/"
-   
    cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/";
    echo "Success"
 }
