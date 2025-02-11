@@ -57,7 +57,7 @@ move_binary() {
    # copy new version in cache
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}
-   ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}
+   ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/
    
    cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/";
    echo "Success"
