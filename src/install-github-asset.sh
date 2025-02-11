@@ -8,7 +8,7 @@
 run() {
    # Run the compilation process.
    cd $PLATFORM_CACHE_DIR || exit 1;
-   if [ ! -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/${TOOL_NAME}" ]; then
+   if [ ! -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" ]; then
        ensure_source 
        download_binary;
        move_binary;
@@ -16,7 +16,7 @@ run() {
 
    copy_lib "$TOOL_NAME" "$TOOL_VERSION";
    echo "$TOOL_NAME installation successful"
-   echo "use it using command: $TOOL_NAME"
+   echo "use it using command: bin/$TOOL_NAME"
 }
 
 copy_lib() {
@@ -24,8 +24,8 @@ copy_lib() {
    echo " Copying $TOOL_NAME version $TOOL_VERSION asset from PLATFORM_CACHE_DIR to PLATFORM_APP_DIR "
    echo "--------------------------------------------------------------------------------------"
 
-   mkdir -p ${PLATFORM_APP_DIR}/.global/bin
-   cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin";
+   mkdir -p ${PLATFORM_APP_DIR}/bin
+   cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/bin";
    cd ${PLATFORM_APP_DIR}/bin;
    chmod +x "${TOOL_NAME}";
    echo "Success"
@@ -72,7 +72,7 @@ move_binary() {
    echo "--------------------------------------------------------------------------------------"
    
    # copy new version in cache
-   cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}";
+   cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}";
    echo "Success"
 }
 
@@ -89,7 +89,7 @@ ensure_environment() {
 get_latest_version() {
   # Get Latest version from GITHUB_ORG/$TOOL repo
   TOOL_VERSION=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
-    -L https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/latest | jq -r '.tag_name');
+    -L https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases | jq -r '.[0].tag_name');
 }
 
 check_version_exists() {
@@ -110,7 +110,6 @@ else
   TOOL_NAME=$(echo "$1" | awk -F '/' '{print $2}');
 fi
 
-# If a specific version $2 is defined, install this $2 version
 if [ -z "$2" ]; then
   echo "You didn't define a specific version (as second parameter) for installing $TOOL_NAME, let's get the latest release version of $1"
   get_latest_version
