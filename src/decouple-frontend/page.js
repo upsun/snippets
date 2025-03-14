@@ -1,6 +1,6 @@
-"use client";
 import '@/app/page.css';
-import Link from "next/link";
+import Podium from "@/app/components/podium";
+import SpeakerList from "@/app/components/speaker";
 
 export default function Homepage() {
     return (
@@ -12,26 +12,16 @@ export default function Homepage() {
                     SymfonyCon Vienna 2024
                 </a>
             </nav>
-
             <div className="row">
                 <div className="col-12">
-                    Welcome on our website showcasing how to decouple your frontend.
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-12">
-                    <div className="mt-4">
-                        <Link href="/speakers" className="btn btn-primary">
-                            Speaker list
-                        </Link>
-                    </div>
-                    <div className="mt-4">
-                        <Link href="/podium" className="btn btn-primary">
-                            Podium
-                        </Link>
+                    <div className={'podium-title'}>
+                        <h1>Welcome on our decoupled website</h1>
                     </div>
                 </div>
             </div>
+            
+            <Podium />
+            <SpeakerList />
         </div>
     );
 }
