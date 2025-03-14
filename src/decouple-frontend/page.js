@@ -1,8 +1,8 @@
-import './page.css';
-import styles from "./page.module.css";
-import {SpeakerList, Podium} from "@/component/podium";
+import '@/app/page.css';
+import Podium from "@/app/components/podium";
+import SpeakerList from "@/app/components/speaker";
 
-const Home = () => {
+export default function Homepage() {
     return (
         <div className={'container'}>
             <nav className="navbar navbar-expand navbar-dark bg-dark ">
@@ -12,10 +12,16 @@ const Home = () => {
                     SymfonyCon Vienna 2024
                 </a>
             </nav>
-
-            <Podium/>
-            <SpeakerList/>
+            <div className="row">
+                <div className="col-12">
+                    <div className={'podium-title'}>
+                        <h1>Welcome on our decoupled website</h1>
+                    </div>
+                </div>
+            </div>
+            
+            <Podium />
+            <SpeakerList />
         </div>
     );
 }
-export default Home;
