@@ -1,8 +1,8 @@
-import './page.css';
-import styles from "./page.module.css";
-import {SpeakerList, Podium} from "@/component/podium";
+"use client";
+import '@/app/page.css';
+import Link from "next/link";
 
-const Home = () => {
+export default function Homepage() {
     return (
         <div className={'container'}>
             <nav className="navbar navbar-expand navbar-dark bg-dark ">
@@ -13,9 +13,25 @@ const Home = () => {
                 </a>
             </nav>
 
-            <Podium/>
-            <SpeakerList/>
+            <div className="row">
+                <div className="col-12">
+                    Welcome on our website showcasing how to decouple your frontend.
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-12">
+                    <div className="mt-4">
+                        <Link href="/speakers" className="btn btn-primary">
+                            Speaker list
+                        </Link>
+                    </div>
+                    <div className="mt-4">
+                        <Link href="/podium" className="btn btn-primary">
+                            Podium
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
-export default Home;
