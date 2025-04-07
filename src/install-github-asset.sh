@@ -78,7 +78,12 @@ copy_lib() {
    echo " Copying $TOOL_NAME version $TOOL_VERSION asset from PLATFORM_CACHE_DIR to PLATFORM_APP_DIR "
    echo "--------------------------------------------------------------------------------------"
 
-   mkdir -p ${PLATFORM_APP_DIR}/.global/bin
+   #mkdir -p ${PLATFORM_APP_DIR}/.global/bin
+   
+   ls -la ${PLATFORM_APP_DIR}/.global/bin
+   
+   ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}
+   
    cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin";
    cd ${PLATFORM_APP_DIR}/.global/bin;
    chmod +x "${TOOL_NAME}";
