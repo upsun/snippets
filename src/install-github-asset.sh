@@ -101,10 +101,15 @@ get_asset_id() {
           (.name | test("x86|amd64|arm64"))
         ))
       | .[0]')
+  echo $ASSET
   
-  ASSET_IDE=$(echo "$ASSET" | jq -r '.id')
+  ASSET_ID=$(echo "$ASSET" | jq -r '.id')
   ASSET_NAME=$(echo "$ASSET" | jq -r '.name')
   ASSET_CONTENT_TYPE=$(echo "$ASSET" | jq -r '.content_type')  
+  
+  echo $ASSET_ID
+  echo $ASSET_NAME
+  echo $ASSET_CONTENT_TYPE
 }
 
 ensure_environment() {
