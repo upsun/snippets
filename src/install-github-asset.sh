@@ -50,9 +50,12 @@ download_binary() {
        tar -xzf "$TOOL_NAME"
        ;;
      *)
-       echo "No extraction method for $ASSET_CONTENT_TYPE"
+       echo "No extraction needed for $ASSET_CONTENT_TYPE file"
        ;;
    esac
+
+   pwd
+   ls -la 
    
    echo "Success"
 }
@@ -63,11 +66,12 @@ move_binary() {
    echo "--------------------------------------------------------------------------------------"
    
    # copy new version in cache
-   cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/";
-   
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin
+   
+   cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/";
+   
    echo "Success"
 }
 
