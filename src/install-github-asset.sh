@@ -182,7 +182,7 @@ else
   fi
 fi
 
-if [ "x$TOOL_VERSION" = "x" ] || [ "$TOOL_VERSION" = "null" ]; then
+if [ -z "$TOOL_VERSION" ] || [ "$TOOL_VERSION" ]; then
   echo "Warning: No valid release version founded for $1, aborting installation."
 else 
   run
