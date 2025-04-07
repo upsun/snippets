@@ -45,7 +45,7 @@ download_binary() {
    
    # Detect from API or fallback
    if [[ "$ASSET_CONTENT_TYPE" == "application/octet-stream" ]]; then
-     CONTENT_TYPE=$(file -b --mime-type "$FILENAME")
+     ASSET_CONTENT_TYPE=$(file -b --mime-type "$FILENAME")
    fi
    
    # Extract accordingly
@@ -57,7 +57,7 @@ download_binary() {
        tar -xzf "$FILENAME"
        ;;
      *)
-       echo "No extraction method for $CONTENT_TYPE"
+       echo "No extraction method for $ASSET_CONTENT_TYPE"
        ;;
    esac
    
@@ -71,6 +71,9 @@ move_binary() {
    
    # copy new version in cache
    cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/";
+   ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
+   ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/
+   ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin
    echo "Success"
 }
 
