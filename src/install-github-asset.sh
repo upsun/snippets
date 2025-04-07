@@ -47,15 +47,18 @@ download_binary() {
        unzip "$TOOL_NAME-asset"
        ;;
      application/gzip | application/x-gzip | application/x-tar)
-       tar -xzf "$TOOL_NAME-asset"
+       tar -xzvf "$TOOL_NAME-asset"
        ;;
      *)
        echo "No extraction needed for $ASSET_CONTENT_TYPE file"
+       mv "$TOOL_NAME-asset" "$TOOL_NAME"
        ;;
    esac
-
+   
+   rm -Rf "$TOOL_NAME-asset"
+   
    pwd
-   ls -la 
+   ls -la
    
    echo "Success"
 }
