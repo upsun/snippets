@@ -142,8 +142,12 @@ ensure_environment() {
 
 get_latest_version() {
   # Get Latest version from GITHUB_ORG/$TOOL repo
-  TOOL_VERSION=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
-    -L https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/latest | jq -r '.tag_name');
+  local response=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
+    -L https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/latest | jq -r '.tag_name')
+  
+  if [ "$response" != "null" ] && [ -n "$response" ]; then
+    TOOL_VERSION_FOUND=$response
+  fi
 }
 
 check_version_exists() {
@@ -182,7 +186,7 @@ else
   fi
 fi
 
-if [ -z "$TOOL_VERSION" ] || [ "$TOOL_VERSION" ]; then
+if [ -z "$TOOL_VERSION" ]; then
   echo "Warning: No valid release version founded for $1, aborting installation."
 else 
   run
