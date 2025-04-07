@@ -188,6 +188,7 @@ fi
 
 if [ -z "$TOOL_VERSION" ]; then
   echo "Warning: No valid release version founded for $1, aborting installation."
+  exit 1
 else 
   run
 fi
