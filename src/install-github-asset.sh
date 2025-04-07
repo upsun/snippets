@@ -83,6 +83,7 @@ copy_lib() {
    ls -la ${PLATFORM_APP_DIR}/.global/bin
    
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}
+   ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_NAME}
    
    cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin";
    cd ${PLATFORM_APP_DIR}/.global/bin;
