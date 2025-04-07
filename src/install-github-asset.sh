@@ -39,15 +39,15 @@ download_binary() {
       
    curl -L \
      -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID" \
-     -o $TOOL_NAME
+     -o "$TOOL_NAME-asset"
    
    # Extract accordingly
    case "$ASSET_CONTENT_TYPE" in
      application/zip)
-       unzip "$TOOL_NAME"
+       unzip "$TOOL_NAME-asset"
        ;;
      application/gzip | application/x-gzip | application/x-tar)
-       tar -xzf "$TOOL_NAME"
+       tar -xzf "$TOOL_NAME-asset"
        ;;
      *)
        echo "No extraction needed for $ASSET_CONTENT_TYPE file"
@@ -69,7 +69,7 @@ move_binary() {
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
    
    # Recherche du binaire dans l'arborescence
-   FOUND=$(find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -type f -name "$TOOL_NAME" -type f | head -n1)
+   FOUND=$(find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -type f -name "$TOOL_NAME" | head -n1)
    
    if [[ -z "$FOUND" ]]; then
      echo "❌ Binaire $TOOL_NAME introuvable dans ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
