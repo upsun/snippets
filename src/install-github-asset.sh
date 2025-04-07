@@ -68,7 +68,17 @@ move_binary() {
    # copy new version in cache
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
    
-   cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/";
+   # Recherche du binaire dans l'arborescence
+   FOUND=$(find "${PLATFORM_CACHE_DIR}" -type f -name "$TOOL_NAME" -executable | head -n1)
+   
+   if [[ -z "$FOUND" ]]; then
+     echo "❌ Binaire $TOOL_NAME introuvable dans $CACHE_DIR"
+     exit 1
+   fi
+   
+   echo "✅ Binaire trouvé: $FOUND"
+   
+   cp -r "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/";
    
    echo "Success"
 }
