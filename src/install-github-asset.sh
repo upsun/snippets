@@ -8,7 +8,7 @@
 run() {
    # Run the compilation process.
    cd $PLATFORM_CACHE_DIR || exit 1;
-   if [ ! -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" ]; then
+   if [ ! -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/bin/${TOOL_NAME}" ]; then
        ensure_source 
        download_binary;
        move_binary;
@@ -67,10 +67,8 @@ move_binary() {
    
    # copy new version in cache
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
-   ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/
-   ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin
    
-   cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/";
+   cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/";
    
    echo "Success"
 }
