@@ -69,7 +69,7 @@ move_binary() {
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
    
    # Recherche du binaire dans l'arborescence
-   FOUND=$(find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -type f -name "$TOOL_NAME" -executable | head -n1)
+   FOUND=$(find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -type f -name "$TOOL_NAME" | head -n1)
    
    if [[ -z "$FOUND" ]]; then
      echo "❌ Binaire $TOOL_NAME introuvable dans ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
