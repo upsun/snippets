@@ -37,24 +37,17 @@ download_binary() {
    
    get_asset_id
       
-   FILENAME="downloaded_asset.tar.gz"
-
    curl -L \
      -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID" \
-     -o $FILENAME
-   
-   # Detect from API or fallback
-   if [[ "$ASSET_CONTENT_TYPE" == "application/octet-stream" ]]; then
-     ASSET_CONTENT_TYPE=$(file -b --mime-type "$FILENAME")
-   fi
+     -o $TOOL_NAME
    
    # Extract accordingly
    case "$ASSET_CONTENT_TYPE" in
      application/zip)
-       unzip "$FILENAME"
+       unzip "$TOOL_NAME"
        ;;
      application/gzip | application/x-gzip | application/x-tar)
-       tar -xzf "$FILENAME"
+       tar -xzf "$TOOL_NAME"
        ;;
      *)
        echo "No extraction method for $ASSET_CONTENT_TYPE"
@@ -71,6 +64,7 @@ move_binary() {
    
    # copy new version in cache
    cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin/${TOOL_NAME}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/";
+   
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/
    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}-${TOOL_VERSION}/bin
