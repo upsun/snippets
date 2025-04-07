@@ -35,15 +35,32 @@ download_binary() {
    echo " Downloading $TOOL_NAME binary (version $TOOL_VERSION) source code "
    echo "--------------------------------------------------------------------------------------"
    
-   BINARY_NAME="$TOOL_NAME-$TOOL_VERSION-linux-amd64.tar.gz"
-
    get_asset_id
       
+   FILENAME="downloaded_asset.tar.gz"
+
    curl -L \
      -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID" \
-     -o $BINARY_NAME
-   tar -xvf $BINARY_NAME
-
+     -o $FILENAME
+   
+   # Detect from API or fallback
+   if [[ "$ASSET_CONTENT_TYPE" == "application/octet-stream" ]]; then
+     CONTENT_TYPE=$(file -b --mime-type "$FILENAME")
+   fi
+   
+   # Extract accordingly
+   case "$ASSET_CONTENT_TYPE" in
+     application/zip)
+       unzip "$FILENAME"
+       ;;
+     application/gzip | application/x-gzip | application/x-tar)
+       tar -xzf "$FILENAME"
+       ;;
+     *)
+       echo "No extraction method for $CONTENT_TYPE"
+       ;;
+   esac
+   
    echo "Success"
 }
 
@@ -70,10 +87,24 @@ copy_lib() {
 }
 
 get_asset_id() {
-   ASSET_ID=$(curl --silent -L \
-    -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" \
-    | jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[] | select(.tag_name==$TOOL_VERSION) | .assets'  \
-    | jq -r --arg BINARY_NAME "$BINARY_NAME" '.[] | select(.name==$BINARY_NAME) | .id');
+#   ASSET_ID=$(curl --silent -L \
+#    -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" \
+#    | jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[] | select(.tag_name==$TOOL_VERSION) | .assets'  \
+#    | jq -r --arg BINARY_NAME "$BINARY_NAME" '.[] | select(.name==$BINARY_NAME) | .id');
+#    
+  ASSET = curl --silent -L \
+      -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" \
+      | jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[]
+          | select(.tag_name==$TOOL_VERSION)
+          | .assets | map(select(
+          (.name | test("linux")) and
+          (.name | test("x86|amd64|arm64"))
+        ))
+      | .[0]'  
+  
+  ASSET_IDE=$(echo "$ASSET" | jq -r '.id')
+  ASSET_NAME=$(echo "$ASSET" | jq -r '.name')
+  ASSET_CONTENT_TYPE=$(echo "$ASSET" | jq -r '.content_type')  
 }
 
 ensure_environment() {
