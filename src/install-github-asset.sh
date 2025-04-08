@@ -78,7 +78,7 @@ move_binary() {
   echo "✅ Found binary: $FOUND"
 
   # copy new version in cache
-  cp -r "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/"
+  cp -r "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}"
 
   echo "Success"
 }
@@ -88,7 +88,8 @@ copy_lib() {
   echo " Copying $TOOL_NAME version $TOOL_VERSION asset from PLATFORM_CACHE_DIR to PLATFORM_APP_DIR "
   echo "--------------------------------------------------------------------------------------"
 
-  cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
+  ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}
+  cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
   cd ${PLATFORM_APP_DIR}/.global/bin
   chmod +x "${TOOL_NAME}"
   echo "Success"
