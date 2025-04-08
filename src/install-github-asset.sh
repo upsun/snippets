@@ -10,7 +10,7 @@
 run() {
   # Run the compilation process.
   cd $PLATFORM_CACHE_DIR || exit 1
-  if [ ! -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/bin/${TOOL_NAME}" ]; then
+  if [ ! -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" ]; then
     ensure_source
     download_binary
     move_binary
