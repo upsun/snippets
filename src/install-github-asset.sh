@@ -106,6 +106,7 @@ copy_lib() {
 
 get_asset_id() {
   if [ -z "${ASSET_NAME_PARAM}" ]; then
+    echo "W: You didn't define an asset name (as 3rd parameter) for installing $TOOL_NAME, getting first asset that contains 'linux' and 'x86|amd64|arm64' in it's asset name."
     ASSET=$(curl --silent -L \
       -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" |
       jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[]
@@ -116,6 +117,7 @@ get_asset_id() {
         ))
       | .[0]')
   else
+    echo "W: You define an asset name (as 3rd parameter) for installing $TOOL_NAME, getting '${ASSET_NAME_PARAM}' asset name."
     ASSET=$(curl --silent -L \
       -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" |
       jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[] | select(.tag_name==$TOOL_VERSION) | .assets' |
@@ -195,9 +197,7 @@ if [ -z "$TOOL_VERSION" ]; then
 fi
 
 # If a specific asset_name $3 is defined, install corresponding ASSET_NAME_PARAM asset
-if [ -z "$3" ]; then
-  echo "W: You didn't define an asset name (as 3rd parameter) for installing $TOOL_NAME, getting first asset with 'linux' and 'x86|amd64|arm64' in it's asset name."
-else
+if [ -n "$3" ]; then
   ASSET_NAME_PARAM="$3"
 fi
 
