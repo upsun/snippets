@@ -11,8 +11,12 @@ run() {
   # Run the compilation process.
   cd $PLATFORM_CACHE_DIR || exit 1
 
-  if [ -n "$ASSET_NAME_PARAM" ] && [ -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME}" ] ||
-     [ -z "$ASSET_NAME_PARAM" ] && [ -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" ]; then
+  echo "run ${ASSET_NAME_PARAM}"
+  ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
+  ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}
+
+  if [ -z "${ASSET_NAME_PARAM}" ] && [ -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" ] ||
+     [ -n "${ASSET_NAME_PARAM}" ] && [ -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME}" ]; then
     ensure_source
     download_binary
     move_binary
