@@ -10,7 +10,10 @@
 run() {
   # Run the compilation process.
   cd $PLATFORM_CACHE_DIR || exit 1
-  if [ ! -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" ]; then
+  if [ -z "$ASSET_NAME_PARAM" ]; then
+
+  if { [ -n "$ASSET_NAME_PARAM" ] && [ -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME}" ]; } ||
+     { [ -z "$ASSET_NAME_PARAM" ] && [ -f "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" ]; }; then
     ensure_source
     download_binary
     move_binary
@@ -42,7 +45,7 @@ download_binary() {
   curl -L \
     -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID" \
     -o "$TOOL_NAME-asset"
-
+  
   # Extract accordingly
   case "$ASSET_CONTENT_TYPE" in
   application/zip)
@@ -78,8 +81,12 @@ move_binary() {
   echo "✅ Found binary: $FOUND"
 
   # copy new version in cache
-  cp -r "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}"
-
+  if [ -z "$ASSET_NAME_PARAM" ]; then
+    cp -r "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}"
+  else 
+    mkdir -p "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
+    cp -r "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
+  fi
   echo "Success"
 }
 
@@ -88,8 +95,12 @@ copy_lib() {
   echo " Copying $TOOL_NAME version $TOOL_VERSION asset from PLATFORM_CACHE_DIR to PLATFORM_APP_DIR "
   echo "--------------------------------------------------------------------------------------"
 
-  ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}
-  cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
+  if [ -z "$ASSET_NAME_PARAM" ]; then
+    cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
+  else 
+    cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
+  fi
+  
   cd ${PLATFORM_APP_DIR}/.global/bin
   chmod +x "${TOOL_NAME}"
   echo "Success"
@@ -130,12 +141,10 @@ ensure_environment() {
   fi
 }
 
-get_latest_version() {
+get_repo_latest_version() {
   # Get Latest version from GITHUB_ORG/$TOOL repo
   local response=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
     -L https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/latest | jq -r '.tag_name')
-  echo "dans get_latest_version"
-  echo response
 
   if [ "$response" != "null" ] && [ -n "$response" ]; then
     TOOL_VERSION=$response
@@ -144,7 +153,7 @@ get_latest_version() {
 
 check_version_exists() {
   # Check if version from GITHUB_ORG/$TOOL repo exists
-  VERSION_FOUNDED=$(curl --silent -L \
+  VERSION_FOUND=$(curl --silent -L \
     -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" |
     jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[] | select(.tag_name==$TOOL_VERSION) | .tag_name ')
 }
@@ -163,24 +172,24 @@ fi
 # If a specific version $2 is defined, install this $2 version
 if [ -z "$2" ]; then
   echo "W: You didn't pass any version (as 2nd parameter) for installing $TOOL_NAME, getting latest version of $1"
-  get_latest_version
+  get_repo_latest_version
   echo "Latest $TOOL_NAME version found is $TOOL_VERSION"
 else
   TOOL_VERSION="$2"
   check_version_exists
-  if [ -z "$VERSION_FOUNDED" ]; then
+  if [ -z "$VERSION_FOUND" ]; then
     echo "Select version for $GITHUB_ORG/$TOOL_NAME ($2) does not exist."
     echo "Please check available releases on https://github.com/$GITHUB_ORG/$TOOL_NAME/releases"
     TOOL_VERSION=""
   else
     echo "You fix a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
-    TOOL_VERSION="$VERSION_FOUNDED"
+    TOOL_VERSION="$VERSION_FOUND"
   fi
 fi
 
 if [ -z "$TOOL_VERSION" ]; then
   echo "Warning: No valid release version founded for $1, aborting installation."
-  exit 1
+  exit 0
 fi
 
 # If a specific asset_name $3 is defined, install corresponding ASSET_NAME_PARAM asset
