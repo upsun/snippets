@@ -1,7 +1,9 @@
 #!/bin/bash
 # This generic script install a $GITHUB_ORG/$TOOL_NAME (corresponding asset) in the $PLATFORM_APP_DIR/bin folder of your app container
-# in the hooks.build of your Upsun/Platform.sh configuration:
-# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin "jgm/pandoc" "[<version>]"
+# in the "hooks.build" of your Upsun/Platform.sh YAML configuration, add the following:
+# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin "<org/repo>" "[<version>]" "[<asset_name>]"
+# example: 
+# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin "dunglas/frankenphp" "1.5.0" "frankenphp-linux-x86_64-gnu"
 # contributors:
 #  - Florent HUCK <florent.huck@platform.sh>
 
@@ -55,10 +57,8 @@ download_binary() {
     ;;
   esac
 
+  # Remove asset binary
   rm -Rf "$TOOL_NAME-asset"
-
-  pwd
-  ls -la
 
   echo "Success"
 }
@@ -68,19 +68,16 @@ move_binary() {
   echo " Moving and caching ${TOOL_NAME} binary "
   echo "--------------------------------------------------------------------------------------"
 
-  # copy new version in cache
-  ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
-
-  # Recherche du binaire dans l'arborescence
+  # Search for binary in the archive tree
   FOUND=$(find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -type f -name "$TOOL_NAME" | head -n1)
-
   if [[ -z "$FOUND" ]]; then
-    echo "❌ Binaire $TOOL_NAME introuvable dans ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+    echo "❌ Can't find $TOOL_NAME in the subtree of ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
     exit 1
   fi
 
-  echo "✅ Binaire trouvé: $FOUND"
+  echo "✅ Found binary: $FOUND"
 
+  # copy new version in cache
   cp -r "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/"
 
   echo "Success"
@@ -90,13 +87,6 @@ copy_lib() {
   echo "--------------------------------------------------------------------------------------"
   echo " Copying $TOOL_NAME version $TOOL_VERSION asset from PLATFORM_CACHE_DIR to PLATFORM_APP_DIR "
   echo "--------------------------------------------------------------------------------------"
-
-  #mkdir -p ${PLATFORM_APP_DIR}/.global/bin
-
-  ls -la ${PLATFORM_APP_DIR}/.global/bin
-
-  ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}
-  ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_NAME}
 
   cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
   cd ${PLATFORM_APP_DIR}/.global/bin
@@ -124,15 +114,9 @@ get_asset_id() {
       jq -r --arg BINARY_NAME "${ASSET_NAME_PARAM}" '.[] | select(.name==$BINARY_NAME)')
   fi
 
-  echo $ASSET
-
   ASSET_ID=$(echo "$ASSET" | jq -r '.id')
   ASSET_NAME=$(echo "$ASSET" | jq -r '.name')
   ASSET_CONTENT_TYPE=$(echo "$ASSET" | jq -r '.content_type')
-
-  echo $ASSET_ID
-  echo $ASSET_NAME
-  echo $ASSET_CONTENT_TYPE
 }
 
 ensure_environment() {
