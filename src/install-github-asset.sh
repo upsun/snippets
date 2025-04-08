@@ -80,9 +80,11 @@ move_binary() {
   echo "✅ Found binary: $FOUND"
 
   # copy new version in cache
-  if [ -z "$ASSET_NAME_PARAM" ]; then
+  if [ -z "${ASSET_NAME_PARAM}" ]; then
+    echo "ASSET_NAME_PARAM (${ASSET_NAME_PARAM}) is not defined"
     cp -r "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}"
   else 
+    echo "creating ${ASSET_NAME_PARAM} folder"
     mkdir -p "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
     cp -r "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
   fi
@@ -93,8 +95,10 @@ copy_lib() {
   echo "--------------------------------------------------------------------------------------"
   echo " Copying $TOOL_NAME version $TOOL_VERSION asset from PLATFORM_CACHE_DIR to PLATFORM_APP_DIR "
   echo "--------------------------------------------------------------------------------------"
-
-  if [ -z "$ASSET_NAME_PARAM" ]; then
+  
+  echo ${ASSET_NAME_PARAM}
+  
+  if [ -z "${ASSET_NAME_PARAM}" ]; then
     cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
   else 
     cp -r "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
