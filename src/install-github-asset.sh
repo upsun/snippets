@@ -1,8 +1,10 @@
 #!/bin/bash
 # This generic script install a $GITHUB_ORG/$TOOL_NAME (corresponding asset) in the $PLATFORM_APP_DIR/bin folder of your app container
 # in the "hooks.build" of your Upsun/Platform.sh YAML configuration, add the following:
-# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin "<org/repo>" "[<version>]" "[<asset_name>]"
-# example: 
+# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin "<org/repo>" "[<release_version>]" "[<asset_name>]"
+# examples: 
+# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin "jgm/pandoc"
+# curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin "mikefarah/yq" "v4.45.1"
 # curl -fsS https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin "dunglas/frankenphp" "1.5.0" "frankenphp-linux-x86_64-gnu"
 # contributors:
 #  - Florent HUCK <florent.huck@platform.sh>
@@ -51,7 +53,7 @@ download_binary() {
     unzip "$TOOL_NAME-asset"
     ;;
   application/gzip | application/x-gzip | application/x-tar)
-    tar -xzvf "$TOOL_NAME-asset"
+    tar -xzf "$TOOL_NAME-asset"
     ;;
   *)
     echo "No extraction needed for $ASSET_CONTENT_TYPE file"
@@ -91,14 +93,15 @@ move_binary() {
 
 copy_lib() {
   echo "--------------------------------------------------------------------------------------"
-  echo " Copying $TOOL_NAME version $TOOL_VERSION asset from PLATFORM_CACHE_DIR to PLATFORM_APP_DIR "
-  echo "--------------------------------------------------------------------------------------"
     
   if [ -z "${ASSET_NAME_PARAM}" ]; then
+    echo " Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin"
     cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
   else 
+    echo " Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin"
     cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
   fi
+  echo "--------------------------------------------------------------------------------------"
   
   cd ${PLATFORM_APP_DIR}/.global/bin
   chmod +x "${TOOL_NAME}"
