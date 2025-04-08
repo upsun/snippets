@@ -149,6 +149,8 @@ get_latest_version() {
   # Get Latest version from GITHUB_ORG/$TOOL repo
   local response=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
     -L https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/latest | jq -r '.tag_name')
+  echo "dans get_latest_version"
+  echo response
 
   if [ "$response" != "null" ] && [ -n "$response" ]; then
     TOOL_VERSION=$response
