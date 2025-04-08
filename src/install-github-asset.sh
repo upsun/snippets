@@ -151,7 +151,7 @@ get_latest_version() {
     -L https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/latest | jq -r '.tag_name')
 
   if [ "$response" != "null" ] && [ -n "$response" ]; then
-    TOOL_VERSION_FOUND=$response
+    TOOL_VERSION=$response
   fi
 }
 
