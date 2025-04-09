@@ -206,7 +206,7 @@ check_repository_auth() {
       echo "💡 Please export a valid GITHUB_API_TOKEN to access private repositories."
       exit 0
     fi
-  else
+  elif [ "${is_private}" = "false" ]; then
     printf "This ${GITHUB_ORG}/${TOOL_NAME} repository is public.\n"
   fi
   
