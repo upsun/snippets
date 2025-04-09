@@ -36,9 +36,9 @@ run() {
 
   copy_lib "$TOOL_NAME" "$TOOL_VERSION"
   
-  printf "✅ ${GREEN}$TOOL_NAME installation successful${NC}\n"
+  printf "✅ ${GREEN_BOLD}$TOOL_NAME installation successful${NC}\n"
 
-  echo "use it with command: $TOOL_NAME\n"
+  printf "${GREEN}Use it with command: $TOOL_NAME${NC}\n\n"
 }
 
 ensure_source() {
@@ -49,7 +49,7 @@ ensure_source() {
   mkdir -p "$PLATFORM_CACHE_DIR/$TOOL_NAME/$TOOL_VERSION"
 
   cd "$PLATFORM_CACHE_DIR/$TOOL_NAME/$TOOL_VERSION" || exit 1
-  printf "✅ Success\n"
+  printf "Success\n"
 }
 
 download_binary() {
@@ -81,7 +81,7 @@ download_binary() {
   # Remove asset binary
   rm -Rf "$TOOL_NAME-asset"
 
-  printf "✅ Success\n"
+  printf "Success\n"
 }
 
 move_binary() {
@@ -105,7 +105,7 @@ move_binary() {
     mkdir -p "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
     cp -rf "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
   fi
-  printf "✅ Success\n"
+  printf "Success\n"
 }
 
 copy_lib() {
@@ -122,7 +122,7 @@ copy_lib() {
   
   cd ${PLATFORM_APP_DIR}/.global/bin
   chmod +x "${TOOL_NAME}"
-  printf "✅ Success\n"
+  printf "Success\n"
 }
 
 get_asset_id() {
