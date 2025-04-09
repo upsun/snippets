@@ -222,18 +222,20 @@ check_repository_auth() {
   fi
 }
 
+printf "\n"
 
 # Get first parameter as the Github identifier: <org>/<repo>
 if [ -z "$1" ]; then
-  printf "${RED}Please define first parameter for the Github organization and the repository where to find the tool, ex: jgm/pandoc, ... ${NC}\n"
+  printf "${RED_BOLD}GitHub asset installation error${NC}\n"
+  printf "${RED}Please provide the Github organization and repository where to find the tool, as first parameter.${NC}\n" 
+  printf "${RED}Ex: curl https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin \"jgm/pandoc\", ... ${NC}\n\n"
   exit 0
 else
+  printf "${GREEN_BOLD}Install $1 GitHub asset.${NC}\n"
   GITHUB_ORG=$(echo "$1" | awk -F '/' '{print $1}')
   TOOL_NAME=$(echo "$1" | awk -F '/' '{print $2}')
 fi
 
-printf "\n"
-printf "${GREEN_BOLD}Install $1 asset.${NC}\n"
 
 # check if we are on an Upsun/Platform.sh
 ensure_environment
