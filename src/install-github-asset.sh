@@ -58,7 +58,7 @@ download_binary() {
   echo "--------------------------------------------------------------------------------------"
 
   get_asset_id
-
+  printf "   "
   curl --progress-bar -L \
     -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID" \
     ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
@@ -195,8 +195,6 @@ check_repository_auth() {
   # Extract the repository visibility
   is_private=$(echo "$body" | jq -r '.private')
 
-  echo "is private: $is_private"
-
   # Inform the user whether the repo is public or private
   if [ "$is_private" = "true" ]; then
     echo "🔒 This repository is private."
@@ -245,21 +243,21 @@ check_repository_auth
 
 # If a specific version $2 is defined, install this $2 version
 if [ -z "$2" ]; then
-  echo "W: You didn't pass any version (as 2nd parameter) for installing $TOOL_NAME, getting latest version of $1."
+  echo "W: You didn't pass any version (as 2nd parameter) for installing ${TOOL_NAME}, getting latest version of ${1}."
   get_repo_latest_version
   if [-n "${TOOL_VERSION}"]; then
-    echo "Latest $TOOL_NAME version found is $TOOL_VERSION"
+    echo "Latest ${TOOL_NAME} version found is ${TOOL_VERSION}"
   fi
 else
   TOOL_VERSION="$2"
   check_version_exists
-  if [ -z "$VERSION_FOUND" ]; then
+  if [ -z "${VERSION_FOUND}" ]; then
     echo "Select version for $GITHUB_ORG/$TOOL_NAME ($2) does not exist."
     echo "Please check available releases on https://github.com/$GITHUB_ORG/$TOOL_NAME/releases"
     TOOL_VERSION=""
   else
     echo "You fix a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
-    TOOL_VERSION="$VERSION_FOUND"
+    TOOL_VERSION="${VERSION_FOUND}"
   fi
 fi
 
