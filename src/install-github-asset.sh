@@ -192,21 +192,6 @@ check_repository_auth() {
   body=$(echo "$response" | sed -e 's/HTTPSTATUS\:.*//g')
   status=$(echo "$response" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
   
-  # Handle 404 or other HTTP errors
-  if [ "$status" -eq 404 ]; then
-    if [ -z "$GITHUB_API_TOKEN" ]; then
-      printf "❌ ${RED_BOLD}Repository not accessible (404).${NC}\n"
-      printf "💡 ${RED_BOLD}It might be a private repository. Please set the GITHUB_API_TOKEN environment variable.${NC}\n\n"
-    else
-      printf "❌ ${RED_BOLD}Repository not found or inaccessible. Make sure the token has the correct permissions.${NC}\n\n"
-    fi
-    exit 0
-  elif [ "$status" -ge 400 ]; then
-    printf "❌ ${RED_BOLD}GitHub API request failed with status $status.${NC}\n"
-    printf "$body\n\n"
-    exit 0
-  fi
-  
   # Extract the repository visibility
   is_private=$(echo "$body" | jq -r '.private')
 
@@ -219,6 +204,21 @@ check_repository_auth() {
     fi
   else
     printf "This $GITHUB_ORG/$TOOL_NAME repository is public.\n"
+  fi
+  
+  # Handle 404 or other HTTP errors
+  if [ "$status" -eq 404 ]; then
+    if [ -z "$GITHUB_API_TOKEN" ]; then
+      printf "❌ ${RED_BOLD}Repository not accessible (404).${NC}\n"
+      printf "💡 ${RED_BOLD}It might be a private repository. Please set a valid GITHUB_API_TOKEN environment variable.${NC}\n\n"
+    else
+      printf "❌ ${RED_BOLD}Repository not found or inaccessible. Make sure the token has the correct permissions.${NC}\n\n"
+    fi
+    exit 0
+  elif [ "$status" -ge 400 ]; then
+    printf "❌ ${RED_BOLD}GitHub API request failed with status $status.${NC}\n"
+    printf "$body\n\n"
+    exit 0
   fi
 }
 
