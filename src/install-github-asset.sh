@@ -35,15 +35,15 @@ run() {
   fi
 
   copy_lib "$TOOL_NAME" "$TOOL_VERSION"
-  echo "$TOOL_NAME installation successful"
+  
   printf "✅ ${GREEN}$TOOL_NAME installation successful${NC}\n"
 
-  echo "use it using command: $TOOL_NAME"
+  echo "use it with command: $TOOL_NAME"
 }
 
 ensure_source() {
   echo "--------------------------------------------------------------------------------------"
-  echo " ${GREEN}Ensuring that the $TOOL_NAME/$TOOL_VERSION binary folder is available and up to date${NC} "
+  printf " ${GREEN}Ensuring that the $TOOL_NAME/$TOOL_VERSION binary folder is available and up to date${NC}\n"
   echo "--------------------------------------------------------------------------------------"
 
   mkdir -p "$PLATFORM_CACHE_DIR/$TOOL_NAME/$TOOL_VERSION"
@@ -54,7 +54,7 @@ ensure_source() {
 
 download_binary() {
   echo "--------------------------------------------------------------------------------------"
-  echo " ${GREEN}Downloading $TOOL_NAME binary (version $TOOL_VERSION) source code${NC} "
+  printf " ${GREEN}Downloading $TOOL_NAME binary (version $TOOL_VERSION) source code${NC}\n"
   echo "--------------------------------------------------------------------------------------"
 
   get_asset_id
@@ -86,13 +86,13 @@ download_binary() {
 
 move_binary() {
   echo "--------------------------------------------------------------------------------------"
-  echo " ${GREEN}Moving and caching ${TOOL_NAME} binary${NC} "
+  printf " ${GREEN}Moving and caching ${TOOL_NAME} binary${NC}\n"
   echo "--------------------------------------------------------------------------------------"
 
   # Search for binary in the archive tree
   FOUND=$(find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -type f -name "$TOOL_NAME" | head -n1)
   if [[ -z "$FOUND" ]]; then
-    echo "❌ Can't find $TOOL_NAME in the subtree of ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+    printf "❌ ${RED}Can't find $TOOL_NAME in the subtree of ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${NC}\n"
     exit 0
   fi
 
@@ -112,10 +112,10 @@ copy_lib() {
   echo "--------------------------------------------------------------------------------------"
     
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    echo " ${GREEN}Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin${NC}"
+    printf " ${GREEN}Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin${NC}\n"
     cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
   else 
-    echo " ${GREEN}Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin${NC}"
+    printf " ${GREEN}Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin${NC}\n"
     cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
   fi
   echo "--------------------------------------------------------------------------------------"
@@ -155,7 +155,7 @@ get_asset_id() {
 ensure_environment() {
   # If not running in an Upsun/Platform.sh build environment, do nothing.
   if [ -z "${PLATFORM_CACHE_DIR}" ]; then
-    echo "${RED_BOLD}Not running in an Upsun/Platform.sh build environment. Aborting $TOOL_NAME installation.${NC}\n"
+    printf "${RED_BOLD}Not running in an Upsun/Platform.sh build environment. Aborting $TOOL_NAME installation.${NC}\n"
     exit 0
   else
     printf "${GREEN_BOLD}On an Upsun/Platform.sh environment.${NC}\n"
@@ -195,14 +195,14 @@ check_repository_auth() {
   # Handle 404 or other HTTP errors
   if [ "$status" -eq 404 ]; then
     if [ -z "$GITHUB_API_TOKEN" ]; then
-      echo "❌ Repository not accessible (404)."
+      printf "❌ ${RED}Repository not accessible (404).${NC}\n"
       echo "💡 It might be a private repository. Please set the GITHUB_API_TOKEN environment variable."
     else
-      echo "❌ Repository not found or inaccessible. Make sure the token has the correct permissions."
+      printf "❌ ${RED}Repository not found or inaccessible. Make sure the token has the correct permissions.${NC}\n"
     fi
     return 0 2>/dev/null || true
   elif [ "$status" -ge 400 ]; then
-    echo "❌ GitHub API request failed with status $status"
+    printf "❌ ${RED}GitHub API request failed with status $status${NC}\n"
     return 0 2>/dev/null || true
   fi
   
@@ -217,7 +217,7 @@ check_repository_auth() {
       return 0 2>/dev/null || true
     fi
   else
-    echo "✅ This repository is public."
+    printf "✅ ${GREEN}This repository is public.${NC}\n"
   fi
 }
 
@@ -226,7 +226,7 @@ ensure_environment
 
 # Get first parameter as the Github identifier: <org>/<repo>
 if [ -z "$1" ]; then
-  echo "Please define first parameter for the Github organization and the repository where to find the tool, ex: jgm/pandoc, ... "
+  printf "${RED}Please define first parameter for the Github organization and the repository where to find the tool, ex: jgm/pandoc, ... ${NC}\n"
 else
   GITHUB_ORG=$(echo "$1" | awk -F '/' '{print $1}')
   TOOL_NAME=$(echo "$1" | awk -F '/' '{print $2}')
@@ -253,7 +253,7 @@ else
 fi
 
 if [ -z "$TOOL_VERSION" ]; then
-  echo "${RED_BOLD}Warning: No valid release version founded for $1, aborting installation.${NC}"
+  printf "${RED_BOLD}Warning: No valid release version founded for $1, aborting installation.${NC}\n"
   exit 0
 fi
 
