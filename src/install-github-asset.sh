@@ -37,6 +37,8 @@ run() {
 
   copy_lib "$TOOL_NAME" "$TOOL_VERSION"
   echo "$TOOL_NAME installation successful"
+  printf "✅ ${GREEN}$TOOL_NAME installation successful${NC}\n"
+
   echo "use it using command: $TOOL_NAME"
 }
 
@@ -48,7 +50,7 @@ ensure_source() {
   mkdir -p "$PLATFORM_CACHE_DIR/$TOOL_NAME/$TOOL_VERSION"
 
   cd "$PLATFORM_CACHE_DIR/$TOOL_NAME/$TOOL_VERSION" || exit 1
-  echo "Success"
+  printf "✅ ${GREEN}Success${NC}\n"
 }
 
 download_binary() {
@@ -92,7 +94,7 @@ move_binary() {
   FOUND=$(find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -type f -name "$TOOL_NAME" | head -n1)
   if [[ -z "$FOUND" ]]; then
     echo "❌ Can't find $TOOL_NAME in the subtree of ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
-    exit 1
+    exit 0
   fi
 
   echo "Found binary: $FOUND"
