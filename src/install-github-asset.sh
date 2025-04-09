@@ -43,7 +43,7 @@ run() {
 
 ensure_source() {
   echo "--------------------------------------------------------------------------------------"
-  echo " Ensuring that the $TOOL_NAME/$TOOL_VERSION binary folder is available and up to date "
+  echo " ${GREEN}Ensuring that the $TOOL_NAME/$TOOL_VERSION binary folder is available and up to date${NC} "
   echo "--------------------------------------------------------------------------------------"
 
   mkdir -p "$PLATFORM_CACHE_DIR/$TOOL_NAME/$TOOL_VERSION"
@@ -54,7 +54,7 @@ ensure_source() {
 
 download_binary() {
   echo "--------------------------------------------------------------------------------------"
-  echo " Downloading $TOOL_NAME binary (version $TOOL_VERSION) source code "
+  echo " ${GREEN}Downloading $TOOL_NAME binary (version $TOOL_VERSION) source code${NC} "
   echo "--------------------------------------------------------------------------------------"
 
   get_asset_id
@@ -86,7 +86,7 @@ download_binary() {
 
 move_binary() {
   echo "--------------------------------------------------------------------------------------"
-  echo " Moving and caching ${TOOL_NAME} binary "
+  echo " ${GREEN}Moving and caching ${TOOL_NAME} binary${NC} "
   echo "--------------------------------------------------------------------------------------"
 
   # Search for binary in the archive tree
@@ -112,10 +112,10 @@ copy_lib() {
   echo "--------------------------------------------------------------------------------------"
     
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    echo " Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin"
+    echo " ${GREEN}Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin${NC}"
     cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
   else 
-    echo " Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin"
+    echo " ${GREEN}Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin${NC}"
     cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
   fi
   echo "--------------------------------------------------------------------------------------"
@@ -155,10 +155,10 @@ get_asset_id() {
 ensure_environment() {
   # If not running in an Upsun/Platform.sh build environment, do nothing.
   if [ -z "${PLATFORM_CACHE_DIR}" ]; then
-    echo "${RED_BOLD}Not running in an Upsun/Platform.sh build environment. Aborting $TOOL_NAME installation.${NC}"
+    echo "${RED_BOLD}Not running in an Upsun/Platform.sh build environment. Aborting $TOOL_NAME installation.${NC}\n"
     exit 0
   else
-    printf "${GREEN_BOLD}On an Upsun/Platform.sh environment.${NC}"
+    printf "${GREEN_BOLD}On an Upsun/Platform.sh environment.${NC}\n"
   fi
 }
 
@@ -182,7 +182,6 @@ check_version_exists() {
 }
 
 check_repository_auth() {
-  echo "dans check_repository_auth"
   # Make the API request and capture both body and HTTP status code
   response=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" -L \
     -H "Accept: application/vnd.github+json" \
@@ -192,8 +191,6 @@ check_repository_auth() {
   # Separate the response body and HTTP status
   body=$(echo "$response" | sed -e 's/HTTPSTATUS\:.*//g')
   status=$(echo "$response" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
-  
-  echo "body $body status $status"
   
   # Handle 404 or other HTTP errors
   if [ "$status" -eq 404 ]; then
