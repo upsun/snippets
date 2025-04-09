@@ -204,11 +204,10 @@ check_repository_auth() {
     else
       echo "❌ Repository not found or inaccessible. Make sure the token has the correct permissions."
     fi
-    exit 0
+    return 0 2>/dev/null || true
   elif [ "$status" -ge 400 ]; then
     echo "❌ GitHub API request failed with status $status"
-    echo "$body"
-    exit 0
+    return 0 2>/dev/null || true
   fi
   
   # Extract the repository visibility
@@ -219,7 +218,7 @@ check_repository_auth() {
     echo "🔒 This repository is private."
     if [ -z "$GITHUB_API_TOKEN" ]; then
       echo "💡 Please export a valid GITHUB_API_TOKEN to access private repositories."
-      exit 0
+      return 0 2>/dev/null || true
     fi
   else
     echo "✅ This repository is public."
