@@ -91,7 +91,7 @@ move_binary() {
 
   # Search for binary in the archive tree
   FOUND=$(find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -type f -name "${TOOL_NAME}" | head -n1)
-  if [[ -z "$FOUND" ]]; then
+  if [ -z "${FOUND}" ]; then
     printf "❌ ${RED_BOLD}Can't find ${TOOL_NAME} in the subtree of ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${NC}\n\n"
     exit 0
   fi
@@ -245,7 +245,7 @@ check_repository_auth
 if [ -z "$2" ]; then
   echo "W: You didn't pass any version (as 2nd parameter) for installing ${TOOL_NAME}, getting latest version of ${1}."
   get_repo_latest_version
-  if [ -n "${TOOL_VERSION}"]; then
+  if [ -n "${TOOL_VERSION}" ]; then
     echo "Latest ${TOOL_NAME} version found is ${TOOL_VERSION}"
   fi
 else
