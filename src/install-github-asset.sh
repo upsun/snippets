@@ -195,6 +195,8 @@ check_repository_auth() {
   # Extract the repository visibility
   is_private=$(echo "$body" | jq -r '.private')
 
+  echo "is private: $is_private"
+
   # Inform the user whether the repo is public or private
   if [ "$is_private" = "true" ]; then
     echo "🔒 This repository is private."
