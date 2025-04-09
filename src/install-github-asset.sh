@@ -38,7 +38,7 @@ run() {
   
   printf "✅ ${GREEN_BOLD}$TOOL_NAME installation successful${NC}\n"
 
-  printf "${GREEN}Use it with command: $TOOL_NAME${NC}\n\n"
+  printf "${GREEN}Use it with command: ${NC}${GREEN_BOLD}$TOOL_NAME${NC}\n\n"
 }
 
 ensure_source() {
@@ -228,7 +228,7 @@ printf "\n"
 if [ -z "$1" ]; then
   printf "${RED_BOLD}GitHub asset installation error${NC}\n"
   printf "${RED}Please provide the Github organization and repository where to find the tool, as first parameter.${NC}\n" 
-  printf "${RED}Ex: curl https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin \"jgm/pandoc\", ... ${NC}\n\n"
+  printf "${RED}Ex: curl https://raw.githubusercontent.com/upsun/snippets/main/src/install-github-asset.sh | bash /dev/stdin \"jgm/pandoc\"${NC}\n\n"
   exit 0
 else
   printf "${GREEN_BOLD}Install $1 GitHub asset.${NC}\n"
