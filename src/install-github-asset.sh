@@ -43,7 +43,7 @@ run() {
 
 ensure_source() {
   echo "--------------------------------------------------------------------------------------"
-  printf " ${GREEN}Ensuring that the $TOOL_NAME/$TOOL_VERSION binary folder is available and up to date${NC}\n"
+  printf " Ensuring that the $TOOL_NAME/$TOOL_VERSION binary folder is available and up to date\n"
   echo "--------------------------------------------------------------------------------------"
 
   mkdir -p "$PLATFORM_CACHE_DIR/$TOOL_NAME/$TOOL_VERSION"
@@ -54,7 +54,7 @@ ensure_source() {
 
 download_binary() {
   echo "--------------------------------------------------------------------------------------"
-  printf " ${GREEN}Downloading $TOOL_NAME binary (version $TOOL_VERSION) source code${NC}\n"
+  printf " Downloading $TOOL_NAME binary (version $TOOL_VERSION) source code\n"
   echo "--------------------------------------------------------------------------------------"
 
   get_asset_id
@@ -86,7 +86,7 @@ download_binary() {
 
 move_binary() {
   echo "--------------------------------------------------------------------------------------"
-  printf " ${GREEN}Moving and caching ${TOOL_NAME} binary${NC}\n"
+  printf " Moving and caching ${TOOL_NAME} binary\n"
   echo "--------------------------------------------------------------------------------------"
 
   # Search for binary in the archive tree
@@ -112,10 +112,10 @@ copy_lib() {
   echo "--------------------------------------------------------------------------------------"
     
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    printf " ${GREEN}Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin${NC}\n"
+    echo " Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin"
     cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
   else 
-    printf " ${GREEN}Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin${NC}\n"
+    echo " Copying $TOOL_NAME version $TOOL_VERSION asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin"
     cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
   fi
   echo "--------------------------------------------------------------------------------------"
@@ -196,13 +196,14 @@ check_repository_auth() {
   if [ "$status" -eq 404 ]; then
     if [ -z "$GITHUB_API_TOKEN" ]; then
       printf "❌ ${RED_BOLD}Repository not accessible (404).${NC}\n"
-      printf "💡 ${RED}It might be a private repository. Please set the GITHUB_API_TOKEN environment variable.${NC}\n"
+      printf "💡 ${RED_BOLD}It might be a private repository. Please set the GITHUB_API_TOKEN environment variable.${NC}\n\n"
     else
-      printf "❌ ${RED_BOLD}Repository not found or inaccessible. Make sure the token has the correct permissions.${NC}\n"
+      printf "❌ ${RED_BOLD}Repository not found or inaccessible. Make sure the token has the correct permissions.${NC}\n\n"
     fi
     exit 0
   elif [ "$status" -ge 400 ]; then
     printf "❌ ${RED_BOLD}GitHub API request failed with status $status.${NC}\n"
+    printf "$body\n\n"
     exit 0
   fi
   
@@ -217,7 +218,7 @@ check_repository_auth() {
       exit 0
     fi
   else
-    printf "✅ This repository is public.\n"
+    printf "This $GITHUB_ORG/$TOOL_NAME repository is public.\n"
   fi
 }
 
@@ -225,6 +226,7 @@ check_repository_auth() {
 # Get first parameter as the Github identifier: <org>/<repo>
 if [ -z "$1" ]; then
   printf "${RED}Please define first parameter for the Github organization and the repository where to find the tool, ex: jgm/pandoc, ... ${NC}\n"
+  exit 0
 else
   GITHUB_ORG=$(echo "$1" | awk -F '/' '{print $1}')
   TOOL_NAME=$(echo "$1" | awk -F '/' '{print $2}')
@@ -258,7 +260,7 @@ else
 fi
 
 if [ -z "$TOOL_VERSION" ]; then
-  printf "${RED_BOLD}Warning: No valid release version founded for $1, aborting installation.${NC}\n"
+  printf "${RED_BOLD}Warning: No valid release version founded for $1, aborting installation.${NC}\n\n"
   exit 0
 fi
 
