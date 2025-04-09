@@ -15,7 +15,6 @@ BLUE='\033[0;34m'
 GREEN='\033[0;32m'
 GREEN_BOLD='\033[01;32m'
 NC='\033[0m'
-NC_BOLD='\033[01m'
 
 # if envVar GITHUB_API_TOKEN is empty, only public repo can be accessed
 if [ -n "$GITHUB_API_TOKEN" ]; then
@@ -156,10 +155,10 @@ get_asset_id() {
 ensure_environment() {
   # If not running in an Upsun/Platform.sh build environment, do nothing.
   if [ -z "${PLATFORM_CACHE_DIR}" ]; then
-    echo "${RED_BOLD}Not running in an Upsun/Platform.sh build environment. Aborting $TOOL_NAME installation.${NC_BOLD}"
+    echo "${RED_BOLD}Not running in an Upsun/Platform.sh build environment. Aborting $TOOL_NAME installation.${NC}"
     exit 0
   else
-    printf "${GREEN_BOLD}On an Upsun/Platform.sh environment.${NC_BOLD}"
+    printf "${GREEN_BOLD}On an Upsun/Platform.sh environment.${NC}"
   fi
 }
 
@@ -257,7 +256,7 @@ else
 fi
 
 if [ -z "$TOOL_VERSION" ]; then
-  echo "${RED_BOLD}Warning: No valid release version founded for $1, aborting installation.${NC_BOLD}"
+  echo "${RED_BOLD}Warning: No valid release version founded for $1, aborting installation.${NC}"
   exit 0
 fi
 
