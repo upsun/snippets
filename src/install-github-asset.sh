@@ -195,14 +195,14 @@ check_repository_auth() {
   # Extract the repository visibility
   is_private=$(echo "${body}" | jq -r '.private')
 
-  # Inform the user whether the repo is public or private
+  # Inform the user whether the repo is public or private (can get a 404 if private)
   if [ "${is_private}" = "true" ]; then
     echo "🔒 This repository is private."
     if [ -z "${GITHUB_API_TOKEN}" ]; then
       echo "💡 Please export a valid GITHUB_API_TOKEN to access private repositories."
       exit 0
     fi
-  else
+  elif [ "${is_private}" = "false" ]; then
     printf "This ${GITHUB_ORG}/${TOOL_NAME} repository is public.\n"
   fi
   
@@ -212,7 +212,7 @@ check_repository_auth() {
       printf "❌ ${RED_BOLD}Repository not accessible (404).${NC}\n"
       printf "💡 ${RED_BOLD}It might be a private repository. Please set a valid GITHUB_API_TOKEN environment variable.${NC}\n\n"
     else
-      printf "❌ ${RED_BOLD}Repository not found or inaccessible. Make sure the token has the correct permissions.${NC}\n\n"
+      printf "❌ ${RED_BOLD}Repository not found or inaccessible. Make sure your GITHUB_API_TOKEN has the correct permissions.${NC}\n\n"
     fi
     exit 0
   elif [ "${status}" -ge 400 ]; then
