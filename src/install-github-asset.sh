@@ -181,6 +181,7 @@ check_version_exists() {
 }
 
 check_repository_auth() {
+  echo "dans check_repository_auth"
   # Make the API request and capture both body and HTTP status code
   response=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" -L \
     -H "Accept: application/vnd.github+json" \
@@ -190,6 +191,8 @@ check_repository_auth() {
   # Separate the response body and HTTP status
   body=$(echo "$response" | sed -e 's/HTTPSTATUS\:.*//g')
   status=$(echo "$response" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+  
+  echo "body $body status $status"
   
   # Handle 404 or other HTTP errors
   if [ "$status" -eq 404 ]; then
@@ -208,7 +211,7 @@ check_repository_auth() {
   
   # Extract the repository visibility
   is_private=$(echo "$body" | jq -r '.private')
-  
+  echo "is private $is_private"
   # Inform the user whether the repo is public or private
   if [ "$is_private" = "true" ]; then
     echo "🔒 This repository is private."
