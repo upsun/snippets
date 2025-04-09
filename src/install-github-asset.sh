@@ -196,6 +196,10 @@ check_repository_auth() {
   is_private=$(echo "${body}" | jq -r '.private')
 
   # Inform the user whether the repo is public or private
+  
+  echo "is private $is_private"
+  echo "$body"
+  
   if [ "${is_private}" = "true" ]; then
     echo "🔒 This repository is private."
     if [ -z "${GITHUB_API_TOKEN}" ]; then
