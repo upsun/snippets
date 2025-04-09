@@ -232,6 +232,8 @@ else
   TOOL_NAME=$(echo "$1" | awk -F '/' '{print $2}')
 fi
 
+check_repository_auth
+
 # If a specific version $2 is defined, install this $2 version
 if [ -z "$2" ]; then
   echo "W: You didn't pass any version (as 2nd parameter) for installing $TOOL_NAME, getting latest version of $1"
@@ -255,7 +257,6 @@ if [ -z "$TOOL_VERSION" ]; then
   exit 0
 fi
 
-check_repository_auth
 
 # If a specific asset_name $3 is defined, install corresponding ASSET_NAME_PARAM asset
 if [ -n "$3" ]; then
