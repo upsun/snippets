@@ -49,7 +49,7 @@ ensure_source() {
   mkdir -p "$PLATFORM_CACHE_DIR/$TOOL_NAME/$TOOL_VERSION"
 
   cd "$PLATFORM_CACHE_DIR/$TOOL_NAME/$TOOL_VERSION" || exit 1
-  printf "✅ ${GREEN}Success${NC}\n"
+  printf "✅ Success\n"
 }
 
 download_binary() {
@@ -81,7 +81,7 @@ download_binary() {
   # Remove asset binary
   rm -Rf "$TOOL_NAME-asset"
 
-  printf "✅ ${GREEN}Success${NC}\n"
+  printf "✅ Success\n"
 }
 
 move_binary() {
@@ -105,7 +105,7 @@ move_binary() {
     mkdir -p "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
     cp -rf "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
   fi
-  printf "✅ ${GREEN}Success${NC}\n"
+  printf "✅ Success\n"
 }
 
 copy_lib() {
@@ -122,7 +122,7 @@ copy_lib() {
   
   cd ${PLATFORM_APP_DIR}/.global/bin
   chmod +x "${TOOL_NAME}"
-  printf "✅ ${GREEN}Success${NC}\n"
+  printf "✅ Success\n"
 }
 
 get_asset_id() {
@@ -195,15 +195,15 @@ check_repository_auth() {
   # Handle 404 or other HTTP errors
   if [ "$status" -eq 404 ]; then
     if [ -z "$GITHUB_API_TOKEN" ]; then
-      printf "❌ ${RED}Repository not accessible (404).${NC}\n"
+      printf "❌ Repository not accessible (404).\n"
       echo "💡 It might be a private repository. Please set the GITHUB_API_TOKEN environment variable."
     else
-      printf "❌ ${RED}Repository not found or inaccessible. Make sure the token has the correct permissions.${NC}\n"
+      printf "❌ Repository not found or inaccessible. Make sure the token has the correct permissions.\n"
     fi
-    return 0 2>/dev/null || true
+    exit 0
   elif [ "$status" -ge 400 ]; then
-    printf "❌ ${RED}GitHub API request failed with status $status${NC}\n"
-    return 0 2>/dev/null || true
+    printf "❌ GitHub API request failed with status $status\n"
+    exit 0
   fi
   
   # Extract the repository visibility
@@ -214,15 +214,13 @@ check_repository_auth() {
     echo "🔒 This repository is private."
     if [ -z "$GITHUB_API_TOKEN" ]; then
       echo "💡 Please export a valid GITHUB_API_TOKEN to access private repositories."
-      return 0 2>/dev/null || true
+      exit 0
     fi
   else
-    printf "✅ ${GREEN}This repository is public.${NC}\n"
+    printf "✅ This repository is public.\n"
   fi
 }
 
-# check if we are on an Upsun/Platform.sh
-ensure_environment
 
 # Get first parameter as the Github identifier: <org>/<repo>
 if [ -z "$1" ]; then
@@ -232,11 +230,16 @@ else
   TOOL_NAME=$(echo "$1" | awk -F '/' '{print $2}')
 fi
 
+printf "\n"
+printf "Install $1 asset.\n"
+
+# check if we are on an Upsun/Platform.sh
+ensure_environment
 check_repository_auth
 
 # If a specific version $2 is defined, install this $2 version
 if [ -z "$2" ]; then
-  echo "W: You didn't pass any version (as 2nd parameter) for installing $TOOL_NAME, getting latest version of $1"
+  echo "W: You didn't pass any version (as 2nd parameter) for installing $TOOL_NAME, getting latest version of $1."
   get_repo_latest_version
   echo "Latest $TOOL_NAME version found is $TOOL_VERSION"
 else
