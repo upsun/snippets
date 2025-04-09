@@ -58,9 +58,8 @@ download_binary() {
   echo "--------------------------------------------------------------------------------------"
 
   get_asset_id
-  printf "   "
   curl --progress-bar -L \
-    -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID" \
+    -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/${TOOL_NAME}/releases/assets/$ASSET_ID" \
     ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
     -o "${TOOL_NAME}-asset"
   
@@ -68,18 +67,19 @@ download_binary() {
   case "${ASSET_CONTENT_TYPE}" in
   application/zip)
     unzip "${TOOL_NAME}-asset"
+    # Remove asset binary
+    rm -Rf "${TOOL_NAME}-asset"
     ;;
   application/gzip | application/x-gzip | application/x-tar)
     tar -xzf "${TOOL_NAME}-asset"
+    # Remove asset binary
+    rm -Rf "${TOOL_NAME}-asset"
     ;;
   *)
     echo "No extraction needed for ${ASSET_CONTENT_TYPE} file"
     mv "${TOOL_NAME}-asset" "${TOOL_NAME}"
     ;;
   esac
-
-  # Remove asset binary
-  rm -Rf "$TOOL_NAME-asset"
 
   printf "Success\n"
 }
@@ -130,7 +130,7 @@ get_asset_id() {
     echo "W: You didn't define an asset name (as 3rd parameter) for installing ${TOOL_NAME}, getting first asset that contains 'linux' and 'x86|amd64|arm64' in it's asset name."
     ASSET=$(curl --silent -L \
       ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
-      -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/${TOOL_NAME}/releases" |
+      -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_ORG}/${TOOL_NAME}/releases" |
       jq -r --arg TOOL_VERSION "${TOOL_VERSION}" '.[]
           | select(.tag_name==$TOOL_VERSION)
           | .assets | map(select(
@@ -142,7 +142,7 @@ get_asset_id() {
     echo "W: You define an asset name (as 3rd parameter) for installing ${TOOL_NAME}, getting '${ASSET_NAME_PARAM}' asset name."
     ASSET=$(curl --silent -L \
       ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
-      -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/${TOOL_NAME}/releases" |
+      -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_ORG}/${TOOL_NAME}/releases" |
       jq -r --arg TOOL_VERSION "${TOOL_VERSION}" '.[] | select(.tag_name==$TOOL_VERSION) | .assets' |
       jq -r --arg BINARY_NAME "${ASSET_NAME_PARAM}" '.[] | select(.name==$BINARY_NAME)')
   fi
@@ -166,7 +166,7 @@ get_repo_latest_version() {
   # Get Latest version from GITHUB_ORG/$TOOL repo
   local response=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
     ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
-    -L https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/latest | jq -r '.tag_name')
+    -L https://api.github.com/repos/${GITHUB_ORG}/${TOOL_NAME}/releases/latest | jq -r '.tag_name')
 
   if [ "${response}" != "null" ] && [ -n "${response}" ]; then
     TOOL_VERSION=${response}
@@ -177,7 +177,7 @@ check_version_exists() {
   # Check if version from GITHUB_ORG/$TOOL repo exists
   VERSION_FOUND=$(curl --silent -L \
     ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
-    -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" |
+    -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_ORG}/${TOOL_NAME}/releases" |
     jq -r --arg TOOL_VERSION "${TOOL_VERSION}" '.[] | select(.tag_name==$TOOL_VERSION) | .tag_name ')
 }
 
@@ -186,7 +186,7 @@ check_repository_auth() {
   response=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" -L \
     -H "Accept: application/vnd.github+json" \
     ${AUTH_HEADER:+-H "${AUTH_HEADER}"} \
-    "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME")
+    "https://api.github.com/repos/${GITHUB_ORG}/${TOOL_NAME}")
   
   # Separate the response body and HTTP status
   body=$(echo "${response}" | sed -e 's/HTTPSTATUS\:.*//g')
@@ -203,7 +203,7 @@ check_repository_auth() {
       exit 0
     fi
   else
-    printf "This $GITHUB_ORG/$TOOL_NAME repository is public.\n"
+    printf "This ${GITHUB_ORG}/${TOOL_NAME} repository is public.\n"
   fi
   
   # Handle 404 or other HTTP errors
@@ -252,11 +252,11 @@ else
   TOOL_VERSION="$2"
   check_version_exists
   if [ -z "${VERSION_FOUND}" ]; then
-    echo "Select version for $GITHUB_ORG/$TOOL_NAME ($2) does not exist."
-    echo "Please check available releases on https://github.com/$GITHUB_ORG/$TOOL_NAME/releases"
+    echo "Select version for ${GITHUB_ORG}/${TOOL_NAME} ($2) does not exist."
+    echo "Please check available releases on https://github.com/${GITHUB_ORG}/${TOOL_NAME}/releases"
     TOOL_VERSION=""
   else
-    echo "You fix a specific version for $GITHUB_ORG/$TOOL_NAME: $2"
+    echo "You fix a specific version for ${GITHUB_ORG}/${TOOL_NAME}: $2"
     TOOL_VERSION="${VERSION_FOUND}"
   fi
 fi
