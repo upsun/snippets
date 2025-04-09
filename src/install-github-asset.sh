@@ -38,7 +38,7 @@ run() {
   
   printf "✅ ${GREEN}$TOOL_NAME installation successful${NC}\n"
 
-  echo "use it with command: $TOOL_NAME"
+  echo "use it with command: $TOOL_NAME\n"
 }
 
 ensure_source() {
@@ -92,7 +92,7 @@ move_binary() {
   # Search for binary in the archive tree
   FOUND=$(find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -type f -name "$TOOL_NAME" | head -n1)
   if [[ -z "$FOUND" ]]; then
-    printf "❌ ${RED}Can't find $TOOL_NAME in the subtree of ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${NC}\n"
+    printf "❌ ${RED_BOLD}Can't find $TOOL_NAME in the subtree of ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${NC}\n"
     exit 0
   fi
 
@@ -158,7 +158,7 @@ ensure_environment() {
     printf "${RED_BOLD}Not running in an Upsun/Platform.sh build environment. Aborting $TOOL_NAME installation.${NC}\n"
     exit 0
   else
-    printf "${GREEN_BOLD}On an Upsun/Platform.sh environment.${NC}\n"
+    printf "On an Upsun/Platform.sh environment.\n"
   fi
 }
 
@@ -195,14 +195,14 @@ check_repository_auth() {
   # Handle 404 or other HTTP errors
   if [ "$status" -eq 404 ]; then
     if [ -z "$GITHUB_API_TOKEN" ]; then
-      printf "❌ Repository not accessible (404).\n"
-      echo "💡 It might be a private repository. Please set the GITHUB_API_TOKEN environment variable."
+      printf "❌ ${RED_BOLD}Repository not accessible (404).${NC}\n"
+      printf "💡 ${RED}It might be a private repository. Please set the GITHUB_API_TOKEN environment variable.${NC}\n"
     else
-      printf "❌ Repository not found or inaccessible. Make sure the token has the correct permissions.\n"
+      printf "❌ ${RED_BOLD}Repository not found or inaccessible. Make sure the token has the correct permissions.${NC}\n"
     fi
     exit 0
   elif [ "$status" -ge 400 ]; then
-    printf "❌ GitHub API request failed with status $status\n"
+    printf "❌ ${RED_BOLD}GitHub API request failed with status $status.${NC}\n"
     exit 0
   fi
   
@@ -231,7 +231,7 @@ else
 fi
 
 printf "\n"
-printf "Install $1 asset.\n"
+printf "${GREEN_BOLD}Install $1 asset.${NC}\n"
 
 # check if we are on an Upsun/Platform.sh
 ensure_environment
@@ -241,7 +241,9 @@ check_repository_auth
 if [ -z "$2" ]; then
   echo "W: You didn't pass any version (as 2nd parameter) for installing $TOOL_NAME, getting latest version of $1."
   get_repo_latest_version
-  echo "Latest $TOOL_NAME version found is $TOOL_VERSION"
+  if [-n "$TOOL_VERSION"]; then
+    echo "Latest $TOOL_NAME version found is $TOOL_VERSION"
+  fi
 else
   TOOL_VERSION="$2"
   check_version_exists
