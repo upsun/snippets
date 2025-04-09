@@ -157,7 +157,7 @@ ensure_environment() {
     echo "${RED_BOLD}Not running in an Upsun/Platform.sh build environment. Aborting $TOOL_NAME installation.${NC_BOLD}"
     exit 0
   else
-    echo "${GREEN_BOLD}On an Upsun/Platform.sh environment.${NC_BOLD}"
+    printf "${GREEN_BOLD}On an Upsun/Platform.sh environment.${NC_BOLD}"
   fi
 }
 
@@ -202,11 +202,11 @@ check_repository_auth() {
     else
       echo "❌ Repository not found or inaccessible. Make sure the token has the correct permissions."
     fi
-    exit 1
+    exit 0
   elif [ "$status" -ge 400 ]; then
     echo "❌ GitHub API request failed with status $status"
     echo "$body"
-    exit 1
+    exit 0
   fi
   
   # Extract the repository visibility
@@ -217,7 +217,7 @@ check_repository_auth() {
     echo "🔒 This repository is private."
     if [ -z "$GITHUB_API_TOKEN" ]; then
       echo "💡 Please export a valid GITHUB_API_TOKEN to access private repositories."
-      exit 1
+      exit 0
     fi
   else
     echo "✅ This repository is public."
