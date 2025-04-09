@@ -180,6 +180,47 @@ check_version_exists() {
     jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[] | select(.tag_name==$TOOL_VERSION) | .tag_name ')
 }
 
+check_repository_auth() {
+  # Make the API request and capture both body and HTTP status code
+  response=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" -L \
+    -H "Accept: application/vnd.github+json" \
+    ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
+    "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME")
+  
+  # Separate the response body and HTTP status
+  body=$(echo "$response" | sed -e 's/HTTPSTATUS\:.*//g')
+  status=$(echo "$response" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+  
+  # Handle 404 or other HTTP errors
+  if [ "$status" -eq 404 ]; then
+    if [ -z "$GITHUB_API_TOKEN" ]; then
+      echo "❌ Repository not accessible (404)."
+      echo "💡 It might be a private repository. Please set the GITHUB_API_TOKEN environment variable."
+    else
+      echo "❌ Repository not found or inaccessible. Make sure the token has the correct permissions."
+    fi
+    exit 1
+  elif [ "$status" -ge 400 ]; then
+    echo "❌ GitHub API request failed with status $status"
+    echo "$body"
+    exit 1
+  fi
+  
+  # Extract the repository visibility
+  is_private=$(echo "$body" | jq -r '.private')
+  
+  # Inform the user whether the repo is public or private
+  if [ "$is_private" = "true" ]; then
+    echo "🔒 This repository is private."
+    if [ -z "$GITHUB_API_TOKEN" ]; then
+      echo "💡 Please export a valid GITHUB_API_TOKEN to access private repositories."
+      exit 1
+    fi
+  else
+    echo "✅ This repository is public."
+  fi
+}
+
 # check if we are on an Upsun/Platform.sh
 ensure_environment
 
@@ -213,6 +254,8 @@ if [ -z "$TOOL_VERSION" ]; then
   echo "${RED_BOLD}Warning: No valid release version founded for $1, aborting installation.${NC_BOLD}"
   exit 0
 fi
+
+check_repository_auth
 
 # If a specific asset_name $3 is defined, install corresponding ASSET_NAME_PARAM asset
 if [ -n "$3" ]; then
