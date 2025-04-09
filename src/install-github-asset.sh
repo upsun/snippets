@@ -9,6 +9,21 @@
 # contributors:
 #  - Florent HUCK <florent.huck@platform.sh>
 
+RED='\033[0;31m'
+RED_BOLD='\033[01;31m'
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+GREEN_BOLD='\033[01;32m'
+NC='\033[0m'
+NC_BOLD='\033[01m'
+
+# if envVar GITHUB_API_TOKEN is empty, only public repo can be accessed
+if [ -n "$GITHUB_API_TOKEN" ]; then
+  AUTH_HEADER="Authorization: Bearer $GITHUB_API_TOKEN"
+else
+  AUTH_HEADER=""
+fi
+
 run() {
   # Run the compilation process.
   cd $PLATFORM_CACHE_DIR || exit 1
@@ -45,6 +60,7 @@ download_binary() {
 
   curl -L \
     -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/assets/$ASSET_ID" \
+    ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
     -o "$TOOL_NAME-asset"
   
   # Extract accordingly
@@ -64,7 +80,7 @@ download_binary() {
   # Remove asset binary
   rm -Rf "$TOOL_NAME-asset"
 
-  echo "Success"
+  printf "✅ ${GREEN}Success${NC}\n"
 }
 
 move_binary() {
@@ -79,7 +95,7 @@ move_binary() {
     exit 1
   fi
 
-  echo "✅ Found binary: $FOUND"
+  echo "Found binary: $FOUND"
 
   # copy new version in cache
   if [ -z "${ASSET_NAME_PARAM}" ]; then
@@ -88,7 +104,7 @@ move_binary() {
     mkdir -p "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
     cp -rf "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
   fi
-  echo "Success"
+  printf "✅ ${GREEN}Success${NC}\n"
 }
 
 copy_lib() {
@@ -105,13 +121,14 @@ copy_lib() {
   
   cd ${PLATFORM_APP_DIR}/.global/bin
   chmod +x "${TOOL_NAME}"
-  echo "Success"
+  printf "✅ ${GREEN}Success${NC}\n"
 }
 
 get_asset_id() {
   if [ -z "${ASSET_NAME_PARAM}" ]; then
     echo "W: You didn't define an asset name (as 3rd parameter) for installing $TOOL_NAME, getting first asset that contains 'linux' and 'x86|amd64|arm64' in it's asset name."
     ASSET=$(curl --silent -L \
+      ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
       -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" |
       jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[]
           | select(.tag_name==$TOOL_VERSION)
@@ -123,6 +140,7 @@ get_asset_id() {
   else
     echo "W: You define an asset name (as 3rd parameter) for installing $TOOL_NAME, getting '${ASSET_NAME_PARAM}' asset name."
     ASSET=$(curl --silent -L \
+      ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
       -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" |
       jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[] | select(.tag_name==$TOOL_VERSION) | .assets' |
       jq -r --arg BINARY_NAME "${ASSET_NAME_PARAM}" '.[] | select(.name==$BINARY_NAME)')
@@ -136,16 +154,17 @@ get_asset_id() {
 ensure_environment() {
   # If not running in an Upsun/Platform.sh build environment, do nothing.
   if [ -z "${PLATFORM_CACHE_DIR}" ]; then
-    echo "Not running in an Upsun/Platform.sh build environment. Aborting $TOOL_NAME installation."
+    echo "${RED_BOLD}Not running in an Upsun/Platform.sh build environment. Aborting $TOOL_NAME installation.${NC_BOLD}"
     exit 0
   else
-    echo "On an Upsun/Platform.sh environment"
+    echo "${GREEN_BOLD}On an Upsun/Platform.sh environment.${NC_BOLD}"
   fi
 }
 
 get_repo_latest_version() {
   # Get Latest version from GITHUB_ORG/$TOOL repo
   local response=$(curl --silent -H 'Accept: application/vnd.github.v3.raw' \
+    ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
     -L https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases/latest | jq -r '.tag_name')
 
   if [ "$response" != "null" ] && [ -n "$response" ]; then
@@ -156,6 +175,7 @@ get_repo_latest_version() {
 check_version_exists() {
   # Check if version from GITHUB_ORG/$TOOL repo exists
   VERSION_FOUND=$(curl --silent -L \
+    ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
     -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_ORG/$TOOL_NAME/releases" |
     jq -r --arg TOOL_VERSION "$TOOL_VERSION" '.[] | select(.tag_name==$TOOL_VERSION) | .tag_name ')
 }
@@ -190,7 +210,7 @@ else
 fi
 
 if [ -z "$TOOL_VERSION" ]; then
-  echo "Warning: No valid release version founded for $1, aborting installation."
+  echo "${RED_BOLD}Warning: No valid release version founded for $1, aborting installation.${NC_BOLD}"
   exit 0
 fi
 
