@@ -75,6 +75,10 @@ download_binary() {
     # Remove asset binary
     rm -Rf "${TOOL_NAME}-asset"
     ;;
+  application/vnd.debian.binary-package)
+    echo "Detected .deb package, attempting install..."
+    sudo apt -f install ./"$FILE_NAME"
+    ;;
   *)
     echo "No extraction needed for ${ASSET_CONTENT_TYPE} file"
     mv "${TOOL_NAME}-asset" "${TOOL_NAME}"
