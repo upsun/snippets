@@ -1,0 +1,19 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+html, body {max-width: 100vw;overflow-x: hidden;}
+body {background-color: rgb(21, 32, 43);color: #fff;font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;padding: 0;margin: 0;}
+a {color: inherit;text-decoration: none;}
+.table-dark.table-striped .divTableRow:nth-of-type(odd) {background-color: rgba(255, 255, 255, 0.05);}
+.table-dark.table-hover .divTableRow:hover {background-color: rgba(255, 255, 255, 0.075);}
+.postLink {cursor: pointer;}
+.table-dark.table-hover .sightingLink.divTableRow:hover .divTableCell {text-decoration: underline;}
+.post {display: grid;grid-auto-flow: column dense;gap: 2rem;margin-top: 2rem;place-content: flex-end center;place-items: flex-end center;height: 100%;font-family: sans-serif;text-align: center;}
+.post {width: 100%;place-content: center;display: flex;}
+.post span {font-size: 2rem;}
+/* DivTable.com */
+.divTable{display: table;width: 100%;}
+.divTableRow {display: table-row;padding: 0.75rem;}
+.divTableCell, .divTableHead {display: table-cell;padding: 3px 10px;}
+.divTableHeading {display: table-header-group;font-weight: bold;}
+.divTableFoot {background-color: #EEE;display: table-footer-group;font-weight: bold;}
+.divTableBody {display: table-row-group;}
