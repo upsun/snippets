@@ -91,7 +91,7 @@ download_binary() {
     ;;
   *)
     echo "No extraction needed for ${ASSET_CONTENT_TYPE} file"
-    #mv ${TMP_DEST} "${TOOL_NAME}"
+    mv ${TMP_DEST} "/tmp/${TOOL_NAME}"
     ;;
   esac
 
