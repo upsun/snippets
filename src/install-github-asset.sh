@@ -65,6 +65,16 @@ download_binary() {
     ${AUTH_HEADER:+-H "${AUTH_HEADER}"} \
     -o ${TMP_DEST}
   
+  # Check if the download was successful
+  if [[ ! -f ${TMP_DEST} ]]; then
+    echo "❌ Failed to download ${TOOL_NAME} binary."
+    exit 1
+  fi
+
+  # Check the file type of the downloaded asset
+  FILE_TYPE=$(file -b --mime-type ${TMP_DEST})
+  echo "Downloaded file type: ${FILE_TYPE}"
+
   # Extract accordingly
   case "${ASSET_CONTENT_TYPE}" in
   application/zip)
