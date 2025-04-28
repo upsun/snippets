@@ -126,6 +126,7 @@ move_binary() {
   echo "${BINARY_DIR}"
   echo "${DEST_DIR}"
   
+  
   if [ "${BINARY_DIR}" != "${DEST_DIR}" ]; then
     echo "Les chemins ne sont pas identiques."
     cp -r "${BINARY_DIR}/." "${DEST_DIR}/"
