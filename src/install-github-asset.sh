@@ -73,7 +73,7 @@ download_binary() {
     rm -Rf ${TMP_DEST}
     ;;
   application/gzip | application/x-gzip | application/x-tar)
-    tar -xzf ${TMP_DEST} -d "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+    tar -xzf ${TMP_DEST} -C "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
     # Remove asset binary
     rm -Rf ${TMP_DEST}
     ;;
