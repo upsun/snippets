@@ -69,7 +69,7 @@ download_binary() {
   ls -la ${TMP_DEST}
   
   # Check if the download was successful
-  if [[ ! -f ${TMP_DEST} ]]; then
+  if [[ ! -f "${TMP_DEST}/${TOOL_NAME}-asset" ]]; then
     echo "❌ Failed to download ${TOOL_NAME} binary."
     exit 1
   fi
