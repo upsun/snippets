@@ -56,28 +56,41 @@ download_binary() {
   echo "--------------------------------------------------------------------------------------"
   printf " Downloading ${TOOL_NAME} binary (version ${TOOL_VERSION}) source code\n"
   echo "--------------------------------------------------------------------------------------"
-
+  
+  TMP_DEST=$(echo "/tmp/${TOOL_NAME}")
+  mkdir -p ${TMP_DEST}
+  
   get_asset_id
   curl --progress-bar -L \
-    -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/${TOOL_NAME}/releases/assets/$ASSET_ID" \
-    ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
-    -o "${TOOL_NAME}-asset"
-  
+    -H "Accept: application/octet-stream" "https://api.github.com/repos/${GITHUB_ORG}/${TOOL_NAME}/releases/assets/${ASSET_ID}" \
+    ${AUTH_HEADER:+-H "${AUTH_HEADER}"} \
+    -o "${TMP_DEST}/${TOOL_NAME}-asset"
+    
+  # Check if the download was successful
+  if [[ ! -f "${TMP_DEST}/${TOOL_NAME}-asset" ]]; then
+    echo "❌ Failed to download ${TOOL_NAME} binary."
+    exit 1
+  fi
+
+  # Check the file type of the downloaded asset
+  FILE_TYPE=$(file -b --mime-type "${TMP_DEST}/${TOOL_NAME}-asset")
+  echo "Downloaded file type: ${FILE_TYPE}"
+
   # Extract accordingly
   case "${ASSET_CONTENT_TYPE}" in
   application/zip)
-    unzip "${TOOL_NAME}-asset"
+    unzip "${TMP_DEST}/${TOOL_NAME}-asset" -d "${TMP_DEST}/"
     # Remove asset binary
-    rm -Rf "${TOOL_NAME}-asset"
+    rm -Rf "${TMP_DEST}/${TOOL_NAME}-asset"
     ;;
   application/gzip | application/x-gzip | application/x-tar)
-    tar -xzf "${TOOL_NAME}-asset"
+    tar -xzf "${TMP_DEST}/${TOOL_NAME}-asset" -C "${TMP_DEST}/"
     # Remove asset binary
-    rm -Rf "${TOOL_NAME}-asset"
+    rm -Rf "${TMP_DEST}/${TOOL_NAME}-asset"
     ;;
   *)
     echo "No extraction needed for ${ASSET_CONTENT_TYPE} file"
-    mv "${TOOL_NAME}-asset" "${TOOL_NAME}"
+    mv "${TMP_DEST}/${TOOL_NAME}-asset" "/tmp/${TOOL_NAME}/${TOOL_NAME}"
     ;;
   esac
 
@@ -88,11 +101,11 @@ move_binary() {
   echo "--------------------------------------------------------------------------------------"
   printf " Moving and caching ${TOOL_NAME} binary\n"
   echo "--------------------------------------------------------------------------------------"
-
+  
   # Search for binary in the archive tree
-  FOUND=$(find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -type f -name "${TOOL_NAME}" | head -n1)
+  FOUND=$(find "${TMP_DEST}" -type f -name "${TOOL_NAME}" | head -n1)
   if [ -z "${FOUND}" ]; then
-    printf "❌ ${RED_BOLD}Can't find ${TOOL_NAME} in the subtree of ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${NC}\n\n"
+    printf "❌ ${RED_BOLD}Can't find ${TOOL_NAME} in the subtree of /tmp/${NC}\n\n"
     exit 0
   fi
 
@@ -100,14 +113,20 @@ move_binary() {
 
   # Get the directory where the binary is located
   BINARY_DIR=$(dirname "$FOUND")
-
+  
   # copy all binaries in the BINARY_DIR in cache folder
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    cp -rf "${BINARY_DIR}/." "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+    DEST_DIR=$(echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}")
   else 
-    mkdir -p "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
-    cp -rf "${BINARY_DIR}/." "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/"
+    DEST_DIR=$(echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}")
+    mkdir -p "$DEST_DIR"
   fi
+
+  if [ "${BINARY_DIR}" != "${DEST_DIR}" ]; then
+    cp -r "${BINARY_DIR}/." "${DEST_DIR}/"
+    rm -rf "${BINARY_DIR}"
+  fi
+  
   printf "Success\n"
 }
 
@@ -115,14 +134,15 @@ copy_lib() {
   echo "--------------------------------------------------------------------------------------"
     
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION} to ${PLATFORM_APP_DIR}/.global/bin"
+    echo " Copying ${TOOL_NAME} cached version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION} to ${PLATFORM_APP_DIR}/.global/bin"
     find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -maxdepth 1 \( -type f -o -type l \) -exec cp -f {} "${PLATFORM_APP_DIR}/.global/bin" \;
   else 
-    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM} to ${PLATFORM_APP_DIR}/.global/bin"
+    echo " Copying ${TOOL_NAME} cached version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM} to ${PLATFORM_APP_DIR}/.global/bin"
     find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/" -maxdepth 1 \( -type f -o -type l \) -exec cp -f {} "${PLATFORM_APP_DIR}/.global/bin" \;
   fi
   echo "--------------------------------------------------------------------------------------"
   
+  # Let the binaries being executable
   find "${PLATFORM_APP_DIR}/.global/bin" -maxdepth 1 \( -type f -o -type l \) -exec chmod +x {} \;
 
   printf "Success\n"
@@ -153,6 +173,10 @@ get_asset_id() {
   ASSET_ID=$(echo "${ASSET}" | jq -r '.id')
   ASSET_NAME=$(echo "${ASSET}" | jq -r '.name')
   ASSET_CONTENT_TYPE=$(echo "${ASSET}" | jq -r '.content_type')
+  
+  if [ -z "${ASSET_ID}" ]; then
+    printf "❌ ${RED_BOLD}Can't find ${TOOL_NAME} Asset ID, please check provided parameters.${NC}\n\n"
+  fi
 }
 
 ensure_environment() {
