@@ -65,9 +65,7 @@ download_binary() {
     -H "Accept: application/octet-stream" "https://api.github.com/repos/${GITHUB_ORG}/${TOOL_NAME}/releases/assets/${ASSET_ID}" \
     ${AUTH_HEADER:+-H "${AUTH_HEADER}"} \
     -o "${TMP_DEST}/${TOOL_NAME}-asset"
-  
-  ls -la "${TMP_DEST}/"
-  
+    
   # Check if the download was successful
   if [[ ! -f "${TMP_DEST}/${TOOL_NAME}-asset" ]]; then
     echo "❌ Failed to download ${TOOL_NAME} binary."
@@ -93,7 +91,6 @@ download_binary() {
   *)
     echo "No extraction needed for ${ASSET_CONTENT_TYPE} file"
     mv "${TMP_DEST}/${TOOL_NAME}-asset" "/tmp/${TOOL_NAME}/${TOOL_NAME}"
-    ls -la "/tmp/${TOOL_NAME}"
     ;;
   esac
 
@@ -104,10 +101,6 @@ move_binary() {
   echo "--------------------------------------------------------------------------------------"
   printf " Moving and caching ${TOOL_NAME} binary\n"
   echo "--------------------------------------------------------------------------------------"
-
-  echo "${TMP_DEST}"
-  ls -la "${TMP_DEST}"
-  ls -la "/tmp/"
   
   # Search for binary in the archive tree
   FOUND=$(find "${TMP_DEST}" -type f -name "${TOOL_NAME}" | head -n1)
@@ -128,19 +121,10 @@ move_binary() {
     DEST_DIR=$(echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}")
     mkdir -p "$DEST_DIR"
   fi
-  
-  echo "${BINARY_DIR}"
-  echo "${DEST_DIR}"
-  
-  
+
   if [ "${BINARY_DIR}" != "${DEST_DIR}" ]; then
-    echo "Les chemins ne sont pas identiques."
-    ls -la "${BINARY_DIR}/." 
     cp -r "${BINARY_DIR}/." "${DEST_DIR}/"
     rm -rf "${BINARY_DIR}"
-  else
-    # Si les chemins sont identiques, afficher un message
-    echo "Les chemins sont identiques. Aucune copie effectuée."
   fi
   
   printf "Success\n"
@@ -193,7 +177,6 @@ get_asset_id() {
   if [ -z "${ASSET_ID}" ]; then
     printf "❌ ${RED_BOLD}Can't find ${TOOL_NAME} Asset ID, please check provided parameters.${NC}\n\n"
   fi
-
 }
 
 ensure_environment() {
