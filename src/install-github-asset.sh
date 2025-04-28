@@ -92,6 +92,7 @@ download_binary() {
   *)
     echo "No extraction needed for ${ASSET_CONTENT_TYPE} file"
     mv ${TMP_DEST} "/tmp/${TOOL_NAME}"
+    ls -la "/tmp/"
     ;;
   esac
 
@@ -103,14 +104,14 @@ move_binary() {
   printf " Moving and caching ${TOOL_NAME} binary\n"
   echo "--------------------------------------------------------------------------------------"
 
-
   echo "${TMP_DEST}"
   ls -la "${TMP_DEST}"
+  ls -la "/tmp/"
   
   # Search for binary in the archive tree
-  FOUND=$(find "${TMP_DEST}" -type f -name "${TOOL_NAME}" | head -n1)
+  FOUND=$(find "/tmp/" -type f -name "${TOOL_NAME}" | head -n1)
   if [ -z "${FOUND}" ]; then
-    printf "❌ ${RED_BOLD}Can't find ${TOOL_NAME} in the subtree of ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${NC}\n\n"
+    printf "❌ ${RED_BOLD}Can't find ${TOOL_NAME} in the subtree of /tmp/${NC}\n\n"
     exit 0
   fi
 
