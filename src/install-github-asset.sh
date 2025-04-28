@@ -91,7 +91,7 @@ download_binary() {
     ;;
   *)
     echo "No extraction needed for ${ASSET_CONTENT_TYPE} file"
-    mv ${TMP_DEST} "©${TOOL_NAME}"
+    mv ${TMP_DEST} "${TOOL_NAME}"
     ;;
   esac
 
@@ -169,7 +169,10 @@ get_asset_id() {
   ASSET_NAME=$(echo "${ASSET}" | jq -r '.name')
   ASSET_CONTENT_TYPE=$(echo "${ASSET}" | jq -r '.content_type')
   
-  echo "contentType is $ASSET_CONTENT_TYPE"
+  if [ -z "${ASSET_ID}" ]; then
+    printf "❌ ${RED_BOLD}Can't find ${TOOL_NAME} Asset ID, please check provided parameters.${NC}\n\n"
+  fi
+
 }
 
 ensure_environment() {
