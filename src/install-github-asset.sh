@@ -80,18 +80,18 @@ download_binary() {
   # Extract accordingly
   case "${ASSET_CONTENT_TYPE}" in
   application/zip)
-    unzip ${TMP_DEST} -d "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+    unzip ${TMP_DEST} 
     # Remove asset binary
     rm -Rf ${TMP_DEST}
     ;;
   application/gzip | application/x-gzip | application/x-tar)
-    tar -xzf ${TMP_DEST} -C "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+    tar -xzf ${TMP_DEST} 
     # Remove asset binary
     rm -Rf ${TMP_DEST}
     ;;
   *)
     echo "No extraction needed for ${ASSET_CONTENT_TYPE} file"
-    mv ${TMP_DEST} "${TOOL_NAME}"
+    #mv ${TMP_DEST} "${TOOL_NAME}"
     ;;
   esac
 
@@ -104,7 +104,7 @@ move_binary() {
   echo "--------------------------------------------------------------------------------------"
 
   # Search for binary in the archive tree
-  FOUND=$(find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -type f -name "${TOOL_NAME}" | head -n1)
+  FOUND=$(find "${TMP_DEST}" -type f -name "${TOOL_NAME}" | head -n1)
   if [ -z "${FOUND}" ]; then
     printf "❌ ${RED_BOLD}Can't find ${TOOL_NAME} in the subtree of ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${NC}\n\n"
     exit 0
@@ -129,6 +129,7 @@ move_binary() {
   
   if [ "${BINARY_DIR}" != "${DEST_DIR}" ]; then
     echo "Les chemins ne sont pas identiques."
+    
     mv "${BINARY_DIR}/." "${DEST_DIR}/"
   else
     # Si les chemins sont identiques, afficher un message
