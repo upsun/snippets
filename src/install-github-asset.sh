@@ -57,13 +57,14 @@ download_binary() {
   printf " Downloading ${TOOL_NAME} binary (version ${TOOL_VERSION}) source code\n"
   echo "--------------------------------------------------------------------------------------"
   
-  TMP_DEST=$(echo "/tmp/${TOOL_NAME}-asset")
+  TMP_DEST=$(echo "/tmp/${TOOL_NAME}")
+  mkdir -p ${TMP_DEST}
   
   get_asset_id
   curl --progress-bar -L \
     -H "Accept: application/octet-stream" "https://api.github.com/repos/${GITHUB_ORG}/${TOOL_NAME}/releases/assets/${ASSET_ID}" \
     ${AUTH_HEADER:+-H "${AUTH_HEADER}"} \
-    -o "${TMP_DEST}"
+    -o "${TMP_DEST}/${TOOL_NAME}-asset"
   
   ls -la ${TMP_DEST}
   
@@ -74,25 +75,25 @@ download_binary() {
   fi
 
   # Check the file type of the downloaded asset
-  FILE_TYPE=$(file -b --mime-type ${TMP_DEST})
+  FILE_TYPE=$(file -b --mime-type "${TMP_DEST}/${TOOL_NAME}-asset")
   echo "Downloaded file type: ${FILE_TYPE}"
 
   # Extract accordingly
   case "${ASSET_CONTENT_TYPE}" in
   application/zip)
-    unzip ${TMP_DEST} 
+    unzip "${TMP_DEST}/${TOOL_NAME}-asset" #-d "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
     # Remove asset binary
-    rm -Rf ${TMP_DEST}
+    rm -Rf "${TMP_DEST}/${TOOL_NAME}-asset"
     ;;
   application/gzip | application/x-gzip | application/x-tar)
-    tar -xzf ${TMP_DEST} 
+    tar -xzf "${TMP_DEST}/${TOOL_NAME}-asset" #-C "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
     # Remove asset binary
-    rm -Rf ${TMP_DEST}
+    rm -Rf "${TMP_DEST}/${TOOL_NAME}-asset"
     ;;
   *)
     echo "No extraction needed for ${ASSET_CONTENT_TYPE} file"
-    mv ${TMP_DEST} "/tmp/${TOOL_NAME}"
-    ls -la "/tmp/"
+    mv "${TMP_DEST}/${TOOL_NAME}-asset" "/tmp/${TOOL_NAME}/${TOOL_NAME}"
+    ls -la "/tmp/${TOOL_NAME}"
     ;;
   esac
 
@@ -109,7 +110,7 @@ move_binary() {
   ls -la "/tmp/"
   
   # Search for binary in the archive tree
-  FOUND=$(find "/tmp/" -type f -name "${TOOL_NAME}" | head -n1)
+  FOUND=$(find "${TMP_DEST}" -type f -name "${TOOL_NAME}" | head -n1)
   if [ -z "${FOUND}" ]; then
     printf "❌ ${RED_BOLD}Can't find ${TOOL_NAME} in the subtree of /tmp/${NC}\n\n"
     exit 0
@@ -135,7 +136,7 @@ move_binary() {
   if [ "${BINARY_DIR}" != "${DEST_DIR}" ]; then
     echo "Les chemins ne sont pas identiques."
     
-    mv "${BINARY_DIR}/." "${DEST_DIR}/"
+    mv "${BINARY_DIR}/" "${DEST_DIR}/"
   else
     # Si les chemins sont identiques, afficher un message
     echo "Les chemins sont identiques. Aucune copie effectuée."
