@@ -57,7 +57,7 @@ download_binary() {
   printf " Downloading ${TOOL_NAME} binary (version ${TOOL_VERSION}) source code\n"
   echo "--------------------------------------------------------------------------------------"
   
-  TMP_DEST="/tmp/${TOOL_NAME}-asset"
+  TMP_DEST=$(echo "/tmp/${TOOL_NAME}-asset")
   
   get_asset_id
   curl --progress-bar -L \
