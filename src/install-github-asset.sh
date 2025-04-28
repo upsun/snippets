@@ -68,12 +68,12 @@ download_binary() {
   # Extract accordingly
   case "${ASSET_CONTENT_TYPE}" in
   application/zip)
-    unzip ${TMP_DEST} -d ./
+    unzip ${TMP_DEST} -d .
     # Remove asset binary
     rm -Rf ${TMP_DEST}
     ;;
   application/gzip | application/x-gzip | application/x-tar)
-    tar -xzf ${TMP_DEST} ./
+    tar -xzf ${TMP_DEST} .
     # Remove asset binary
     rm -Rf ${TMP_DEST}
     ;;
