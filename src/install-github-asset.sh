@@ -106,10 +106,10 @@ move_binary() {
 
   # copy all binaries in the BINARY_DIR in cache folder
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    cp -rf "${BINARY_DIR}/*" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+    cp -rf "${BINARY_DIR}/." "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
   else 
     mkdir -p "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
-    cp -rf "${BINARY_DIR}/*" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
+    cp -rf "${BINARY_DIR}/." "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/"
   fi
   printf "Success\n"
 }
@@ -122,18 +122,26 @@ copy_lib() {
     
     ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
     
-    cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/." "${PLATFORM_APP_DIR}/.global/bin"
+    #cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/." "${PLATFORM_APP_DIR}/.global/bin"
+    COPIED_FILES=$(rsync -a --info=NAME "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/." "${PLATFORM_APP_DIR}/.global/bin" | grep -v '/$')
   else 
     echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/* to ${PLATFORM_APP_DIR}/.global/bin"
     
     ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/
     
-    cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/*" "${PLATFORM_APP_DIR}/.global/bin"
+    #cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/." "${PLATFORM_APP_DIR}/.global/bin"
+    
+    COPIED_FILES=$(rsync -a --info=NAME "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/." "${PLATFORM_APP_DIR}/.global/bin" | grep -v '/$')
+
   fi
   echo "--------------------------------------------------------------------------------------"
   
-  cd ${PLATFORM_APP_DIR}/.global/bin
-  chmod +x "${TOOL_NAME}"
+  #cd ${PLATFORM_APP_DIR}/.global/bin
+  # chmod +x only the newly copied files
+  for FILE in $COPIED_FILES; do
+    chmod +x "${PLATFORM_APP_DIR}/.global/bin/${FILE}"
+  done
+  
   printf "Success\n"
 }
 
