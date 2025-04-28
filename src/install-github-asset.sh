@@ -113,7 +113,7 @@ move_binary() {
   echo "Found binary: $FOUND"
 
   # Get the directory where the binary is located
-  BINARY_DIR=$(dirname "$FOUND")
+  BINARY_DIR=$(dirname "$FOUND/")
   
   # copy all binaries in the BINARY_DIR in cache folder
   if [ -z "${ASSET_NAME_PARAM}" ]; then
@@ -128,7 +128,7 @@ move_binary() {
   
   if [ "${BINARY_DIR}" != "${DEST_DIR}" ]; then
     echo "Les chemins ne sont pas identiques."
-    cp -r "${BINARY_DIR}/" "${DEST_DIR}/"
+    cp -r "${BINARY_DIR}/." "${DEST_DIR}/"
   else
     # Si les chemins sont identiques, afficher un message
     echo "Les chemins sont identiques. Aucune copie effectuée."
