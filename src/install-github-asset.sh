@@ -100,9 +100,6 @@ move_binary() {
 
   # Get the directory where the binary is located
   BINARY_DIR=$(dirname "$FOUND")
-  echo "Binary is in: $BINARY_DIR"
-
-  ls -la $BINARY_DIR
 
   # copy all binaries in the BINARY_DIR in cache folder
   if [ -z "${ASSET_NAME_PARAM}" ]; then
@@ -119,27 +116,12 @@ copy_lib() {
     
   if [ -z "${ASSET_NAME_PARAM}" ]; then
     echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION} to ${PLATFORM_APP_DIR}/.global/bin"
-    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
-    #    cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/." "${PLATFORM_APP_DIR}/.global/bin"
-    
     find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -maxdepth 1 \( -type f -o -type l \) -exec cp -f {} "${PLATFORM_APP_DIR}/.global/bin" \;
-
   else 
     echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM} to ${PLATFORM_APP_DIR}/.global/bin"
-    
-    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/
-    
     find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/" -maxdepth 1 \( -type f -o -type l \) -exec cp -f {} "${PLATFORM_APP_DIR}/.global/bin" \;
-#    cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/." "${PLATFORM_APP_DIR}/.global/bin" 
-
   fi
   echo "--------------------------------------------------------------------------------------"
-  
-  #cd ${PLATFORM_APP_DIR}/.global/bin
-  # chmod +x only the newly copied files
-#  for FILE in $COPIED_FILES; do
-#    chmod +x "${PLATFORM_APP_DIR}/.global/bin/${FILE}"
-#  done
   
   find "${PLATFORM_APP_DIR}/.global/bin" -maxdepth 1 \( -type f -o -type l \) -exec chmod +x {} \;
 
@@ -286,7 +268,6 @@ if [ -z "${TOOL_VERSION}" ]; then
   printf "${RED_BOLD}Warning: No valid release version founded for $1, aborting installation.${NC}\n\n"
   exit 0
 fi
-
 
 # If a specific asset_name $3 is defined, install corresponding ASSET_NAME_PARAM asset
 if [ -n "${3}" ]; then
