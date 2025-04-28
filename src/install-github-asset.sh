@@ -127,6 +127,7 @@ move_binary() {
   echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
   
   if [ "${BINARY_DIR}" != "${DEST_DIR}" ]; then
+    echo "Les chemins ne sont pas identiques."
     cp -r "${BINARY_DIR}/" "${DEST_DIR}/"
   else
     # Si les chemins sont identiques, afficher un message
