@@ -63,7 +63,7 @@ download_binary() {
   curl --progress-bar -L \
     -H "Accept: application/octet-stream" "https://api.github.com/repos/${GITHUB_ORG}/${TOOL_NAME}/releases/assets/${ASSET_ID}" \
     ${AUTH_HEADER:+-H "${AUTH_HEADER}"} \
-    -o ${TMP_DEST}
+    -o "${TMP_DEST}"
   
   ls -la ${TMP_DEST}
   
@@ -168,6 +168,8 @@ get_asset_id() {
   ASSET_ID=$(echo "${ASSET}" | jq -r '.id')
   ASSET_NAME=$(echo "${ASSET}" | jq -r '.name')
   ASSET_CONTENT_TYPE=$(echo "${ASSET}" | jq -r '.content_type')
+  
+  echo "contentType is $ASSET_CONTENT_TYPE"
 }
 
 ensure_environment() {
