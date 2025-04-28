@@ -56,28 +56,30 @@ download_binary() {
   echo "--------------------------------------------------------------------------------------"
   printf " Downloading ${TOOL_NAME} binary (version ${TOOL_VERSION}) source code\n"
   echo "--------------------------------------------------------------------------------------"
-
+  
+  TMP_DEST = "/tmp/${TOOL_NAME}-asset"
+  
   get_asset_id
   curl --progress-bar -L \
-    -H "Accept: application/octet-stream" "https://api.github.com/repos/$GITHUB_ORG/${TOOL_NAME}/releases/assets/$ASSET_ID" \
-    ${AUTH_HEADER:+-H "$AUTH_HEADER"} \
-    -o "${TOOL_NAME}-asset"
+    -H "Accept: application/octet-stream" "https://api.github.com/repos/${GITHUB_ORG}/${TOOL_NAME}/releases/assets/${ASSET_ID}" \
+    ${AUTH_HEADER:+-H "${AUTH_HEADER}"} \
+    -o ${TMP_DEST}
   
   # Extract accordingly
   case "${ASSET_CONTENT_TYPE}" in
   application/zip)
-    unzip "${TOOL_NAME}-asset"
+    unzip ${TMP_DEST} -d ./
     # Remove asset binary
-    rm -Rf "${TOOL_NAME}-asset"
+    rm -Rf ${TMP_DEST}
     ;;
   application/gzip | application/x-gzip | application/x-tar)
-    tar -xzf "${TOOL_NAME}-asset"
+    tar -xzf ${TMP_DEST} ./
     # Remove asset binary
-    rm -Rf "${TOOL_NAME}-asset"
+    rm -Rf ${TMP_DEST}
     ;;
   *)
     echo "No extraction needed for ${ASSET_CONTENT_TYPE} file"
-    mv "${TOOL_NAME}-asset" "${TOOL_NAME}"
+    mv ${TMP_DEST} "./${TOOL_NAME}"
     ;;
   esac
 
@@ -115,14 +117,15 @@ copy_lib() {
   echo "--------------------------------------------------------------------------------------"
     
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION} to ${PLATFORM_APP_DIR}/.global/bin"
+    echo " Copying ${TOOL_NAME} cached version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION} to ${PLATFORM_APP_DIR}/.global/bin"
     find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -maxdepth 1 \( -type f -o -type l \) -exec cp -f {} "${PLATFORM_APP_DIR}/.global/bin" \;
   else 
-    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM} to ${PLATFORM_APP_DIR}/.global/bin"
+    echo " Copying ${TOOL_NAME} cached version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM} to ${PLATFORM_APP_DIR}/.global/bin"
     find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/" -maxdepth 1 \( -type f -o -type l \) -exec cp -f {} "${PLATFORM_APP_DIR}/.global/bin" \;
   fi
   echo "--------------------------------------------------------------------------------------"
   
+  # Let the binaries being executable
   find "${PLATFORM_APP_DIR}/.global/bin" -maxdepth 1 \( -type f -o -type l \) -exec chmod +x {} \;
 
   printf "Success\n"
