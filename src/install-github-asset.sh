@@ -118,30 +118,31 @@ copy_lib() {
   echo "--------------------------------------------------------------------------------------"
     
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/* to ${PLATFORM_APP_DIR}/.global/bin"
-    
+    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION} to ${PLATFORM_APP_DIR}/.global/bin"
     ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
+    #    cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/." "${PLATFORM_APP_DIR}/.global/bin"
     
-    #cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/." "${PLATFORM_APP_DIR}/.global/bin"
-    COPIED_FILES=$(rsync -a --info=NAME "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/." "${PLATFORM_APP_DIR}/.global/bin" | grep -v '/$')
+    find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -maxdepth 1 \( -type f -o -type l \) -exec cp -f {} "${PLATFORM_APP_DIR}/.global/bin" \;
+
   else 
-    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/* to ${PLATFORM_APP_DIR}/.global/bin"
+    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM} to ${PLATFORM_APP_DIR}/.global/bin"
     
     ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/
     
-    #cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/." "${PLATFORM_APP_DIR}/.global/bin"
-    
-    COPIED_FILES=$(rsync -a --info=NAME "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/." "${PLATFORM_APP_DIR}/.global/bin" | grep -v '/$')
+    find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/" -maxdepth 1 \( -type f -o -type l \) -exec cp -f {} "${PLATFORM_APP_DIR}/.global/bin" \;
+#    cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/." "${PLATFORM_APP_DIR}/.global/bin" 
 
   fi
   echo "--------------------------------------------------------------------------------------"
   
   #cd ${PLATFORM_APP_DIR}/.global/bin
   # chmod +x only the newly copied files
-  for FILE in $COPIED_FILES; do
-    chmod +x "${PLATFORM_APP_DIR}/.global/bin/${FILE}"
-  done
+#  for FILE in $COPIED_FILES; do
+#    chmod +x "${PLATFORM_APP_DIR}/.global/bin/${FILE}"
+#  done
   
+  find "${PLATFORM_APP_DIR}/.global/bin" -maxdepth 1 \( -type f -o -type l \) -exec chmod +x {} \;
+
   printf "Success\n"
 }
 
