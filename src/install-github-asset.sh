@@ -68,18 +68,18 @@ download_binary() {
   # Extract accordingly
   case "${ASSET_CONTENT_TYPE}" in
   application/zip)
-    unzip ${TMP_DEST} -d .
+    unzip ${TMP_DEST} -d "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
     # Remove asset binary
     rm -Rf ${TMP_DEST}
     ;;
   application/gzip | application/x-gzip | application/x-tar)
-    tar -xzf ${TMP_DEST} .
+    tar -xzf ${TMP_DEST} -d "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
     # Remove asset binary
     rm -Rf ${TMP_DEST}
     ;;
   *)
     echo "No extraction needed for ${ASSET_CONTENT_TYPE} file"
-    mv ${TMP_DEST} "./${TOOL_NAME}"
+    mv ${TMP_DEST} "©${TOOL_NAME}"
     ;;
   esac
 
