@@ -102,12 +102,14 @@ move_binary() {
   BINARY_DIR=$(dirname "$FOUND")
   echo "Binary is in: $BINARY_DIR"
 
+  ls -la $BINARY_DIR
+
   # copy all binaries in the BINARY_DIR in cache folder
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    cp -rf "${BINARY_DIR}/." "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}"
+    cp -rf "${BINARY_DIR}/*" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
   else 
     mkdir -p "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
-    cp -rf "${BINARY_DIR}/." "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
+    cp -rf "${BINARY_DIR}/*" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
   fi
   printf "Success\n"
 }
@@ -117,9 +119,15 @@ copy_lib() {
     
   if [ -z "${ASSET_NAME_PARAM}" ]; then
     echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/* to ${PLATFORM_APP_DIR}/.global/bin"
+    
+    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/
+    
     cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/." "${PLATFORM_APP_DIR}/.global/bin"
   else 
     echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/* to ${PLATFORM_APP_DIR}/.global/bin"
+    
+    ls -la ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/
+    
     cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/*" "${PLATFORM_APP_DIR}/.global/bin"
   fi
   echo "--------------------------------------------------------------------------------------"
