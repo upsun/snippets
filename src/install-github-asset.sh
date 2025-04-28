@@ -103,6 +103,10 @@ move_binary() {
   printf " Moving and caching ${TOOL_NAME} binary\n"
   echo "--------------------------------------------------------------------------------------"
 
+
+  echo "${TMP_DEST}"
+  ls -la "${TMP_DEST}"
+  
   # Search for binary in the archive tree
   FOUND=$(find "${TMP_DEST}" -type f -name "${TOOL_NAME}" | head -n1)
   if [ -z "${FOUND}" ]; then
