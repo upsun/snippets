@@ -113,18 +113,18 @@ move_binary() {
   echo "Found binary: $FOUND"
 
   # Get the directory where the binary is located
-  BINARY_DIR=$(dirname "$FOUND/")
+  BINARY_DIR=$(dirname "$FOUND")
   
   # copy all binaries in the BINARY_DIR in cache folder
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    DEST_DIR=$(echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/")
+    DEST_DIR=$(echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}")
   else 
-    DEST_DIR=$(echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/")
+    DEST_DIR=$(echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}")
     mkdir -p "$DEST_DIR"
   fi
   
   echo "${BINARY_DIR}"
-  echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+  echo "${DEST_DIR}"
   
   if [ "${BINARY_DIR}" != "${DEST_DIR}" ]; then
     echo "Les chemins ne sont pas identiques."
