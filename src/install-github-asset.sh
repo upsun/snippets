@@ -65,6 +65,8 @@ download_binary() {
     ${AUTH_HEADER:+-H "${AUTH_HEADER}"} \
     -o ${TMP_DEST}
   
+  ls -la ${TMP_DEST}
+  
   # Check if the download was successful
   if [[ ! -f ${TMP_DEST} ]]; then
     echo "❌ Failed to download ${TOOL_NAME} binary."
