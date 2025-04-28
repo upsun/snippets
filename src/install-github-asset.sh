@@ -135,8 +135,8 @@ move_binary() {
   
   if [ "${BINARY_DIR}" != "${DEST_DIR}" ]; then
     echo "Les chemins ne sont pas identiques."
-    
-    mv "${BINARY_DIR}/" "${DEST_DIR}/"
+    ls- la "${BINARY_DIR}/." 
+    mv "${BINARY_DIR}/." "${DEST_DIR}/"
   else
     # Si les chemins sont identiques, afficher un message
     echo "Les chemins sont identiques. Aucune copie effectuée."
