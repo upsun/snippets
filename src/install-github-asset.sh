@@ -98,12 +98,15 @@ move_binary() {
 
   echo "Found binary: $FOUND"
 
-  # copy new version in cache
+  # Get the directory where the binary is located
+  BINARY_DIR=$(dirname "$FOUND")
+
+  # copy all binaries in the BINARY_DIR in cache folder
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    cp -rf "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}"
+    cp -rf "${BINARY_DIR}/." "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
   else 
     mkdir -p "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
-    cp -rf "${FOUND}" "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
+    cp -rf "${BINARY_DIR}/." "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/"
   fi
   printf "Success\n"
 }
@@ -112,16 +115,16 @@ copy_lib() {
   echo "--------------------------------------------------------------------------------------"
     
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin"
-    cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
+    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION} to ${PLATFORM_APP_DIR}/.global/bin"
+    find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/" -maxdepth 1 \( -type f -o -type l \) -exec cp -f {} "${PLATFORM_APP_DIR}/.global/bin" \;
   else 
-    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME} to ${PLATFORM_APP_DIR}/.global/bin"
-    cp -rf "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/${TOOL_NAME}" "${PLATFORM_APP_DIR}/.global/bin"
+    echo " Copying ${TOOL_NAME} version ${TOOL_VERSION} asset from ${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM} to ${PLATFORM_APP_DIR}/.global/bin"
+    find "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/" -maxdepth 1 \( -type f -o -type l \) -exec cp -f {} "${PLATFORM_APP_DIR}/.global/bin" \;
   fi
   echo "--------------------------------------------------------------------------------------"
   
-  cd ${PLATFORM_APP_DIR}/.global/bin
-  chmod +x "${TOOL_NAME}"
+  find "${PLATFORM_APP_DIR}/.global/bin" -maxdepth 1 \( -type f -o -type l \) -exec chmod +x {} \;
+
   printf "Success\n"
 }
 
@@ -265,7 +268,6 @@ if [ -z "${TOOL_VERSION}" ]; then
   printf "${RED_BOLD}Warning: No valid release version founded for $1, aborting installation.${NC}\n\n"
   exit 0
 fi
-
 
 # If a specific asset_name $3 is defined, install corresponding ASSET_NAME_PARAM asset
 if [ -n "${3}" ]; then
