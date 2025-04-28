@@ -81,12 +81,12 @@ download_binary() {
   # Extract accordingly
   case "${ASSET_CONTENT_TYPE}" in
   application/zip)
-    unzip "${TMP_DEST}/${TOOL_NAME}-asset" #-d "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+    unzip "${TMP_DEST}/${TOOL_NAME}-asset" -d "${TMP_DEST}/"
     # Remove asset binary
     rm -Rf "${TMP_DEST}/${TOOL_NAME}-asset"
     ;;
   application/gzip | application/x-gzip | application/x-tar)
-    tar -xzf "${TMP_DEST}/${TOOL_NAME}-asset" #-C "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+    tar -xzf "${TMP_DEST}/${TOOL_NAME}-asset" -C "${TMP_DEST}/"
     # Remove asset binary
     rm -Rf "${TMP_DEST}/${TOOL_NAME}-asset"
     ;;
