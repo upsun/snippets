@@ -114,14 +114,26 @@ move_binary() {
 
   # Get the directory where the binary is located
   BINARY_DIR=$(dirname "$FOUND")
-
+  
   # copy all binaries in the BINARY_DIR in cache folder
   if [ -z "${ASSET_NAME_PARAM}" ]; then
-    cp -rf "${BINARY_DIR}/." "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+    DEST_DIR=$(echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/")
   else 
-    mkdir -p "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}"
-    cp -rf "${BINARY_DIR}/." "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/"
+    DEST_DIR=$(echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/${ASSET_NAME_PARAM}/")
+    mkdir -p "$DEST_DIR"
   fi
+  
+  echo "${BINARY_DIR}"
+  echo "${PLATFORM_CACHE_DIR}/${TOOL_NAME}/${TOOL_VERSION}/"
+  
+  if [ "${BINARY_DIR}" != "${DEST_DIR}/" ]; then
+    cp -r "${BINARY_DIR}/" "${DEST_DIR}/"
+  else
+    # Si les chemins sont identiques, afficher un message
+    echo "Les chemins sont identiques. Aucune copie effectuée."
+  fi
+  
+  
   printf "Success\n"
 }
 
