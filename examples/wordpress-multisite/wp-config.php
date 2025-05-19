@@ -99,6 +99,28 @@ define( 'WP_AUTO_UPDATE_CORE', false );
 // prefix.
 $table_prefix  = 'wp_';
 
+/**
+ * Multisite support
+ */
+define('WP_ALLOW_MULTISITE', true); //enables the Network setup panel in Tools
+define('MULTISITE', true); //instructs WordPress to run in multisite mode
+
+if( MULTISITE && WP_ALLOW_MULTISITE) {
+    define('SUBDOMAIN_INSTALL', false); // does the instance contain subdirectory sites (false) or subdomain/multiple domain sites (true)
+    define('DOMAIN_CURRENT_SITE', parse_url(filter_var(getenv('DOMAIN_CURRENT_SITE'),FILTER_VALIDATE_URL),PHP_URL_HOST));
+    define('PATH_CURRENT_SITE', '/'); //path to the WordPress site if it isn't the root of the site (e.g. https://foo.com/blog/)
+    define('SITE_ID_CURRENT_SITE', 1); //main/primary site ID
+    define('BLOG_ID_CURRENT_SITE', 1); //main/primary/parent blog ID
+
+    /**
+     * we have a sub/multidomain multisite, and the site currently being requested is not the default domain, so we'll
+     * need to set COOKIE_DOMAIN to the domain being requested
+     */
+    if (SUBDOMAIN_INSTALL && $site_host !== DOMAIN_CURRENT_SITE) {
+        define('COOKIE_DOMAIN',$site_host);
+    }
+}
+
 /** Absolute path to the WordPress directory. */
 if ( ! defined( 'ABSPATH' ) ) {
     define( 'ABSPATH', dirname( __FILE__ ) . '/' );
