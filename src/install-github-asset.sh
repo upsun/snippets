@@ -83,7 +83,7 @@ download_binary() {
     # Remove asset binary
     rm -Rf "${TMP_DEST}/${TOOL_NAME}-asset"
     ;;
-  application/gzip | application/x-gzip | application/x-tar)
+  application/gzip | application/x-gzip | application/x-tar | application/x-gtar)
     tar -xzf "${TMP_DEST}/${TOOL_NAME}-asset" -C "${TMP_DEST}/"
     # Remove asset binary
     rm -Rf "${TMP_DEST}/${TOOL_NAME}-asset"
