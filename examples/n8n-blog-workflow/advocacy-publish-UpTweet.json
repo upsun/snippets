@@ -1,0 +1,618 @@
+{
+  "name": "Advocacy Publish > UpTweet",
+  "nodes": [
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C08GJLC117B",
+          "mode": "id"
+        },
+        "messageType": "block",
+        "blocksUi": "={{ $json.text }}",
+        "text": "=\n",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1840,
+        -500
+      ],
+      "id": "5053aaa5-f666-4fb5-b162-8659d603fc2e",
+      "name": "Send a message",
+      "webhookId": "14a14597-2ea0-49d8-9b93-70fd480736b0",
+      "credentials": {
+        "slackApi": {
+          "id": "FZxZ6RDzBOFCjTyV",
+          "name": "Slack account API token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summarize the following article in a concise way suitable and generate a tweet without reference of github source:\n{{ $json.data }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        660,
+        -360
+      ],
+      "id": "fb2aac4a-053a-4c2a-a447-d1b6c30be194",
+      "name": "AI Agent",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo",
+          "mode": "list",
+          "cachedResultName": "gpt-3.5-turbo"
+        },
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        -140
+      ],
+      "id": "0ce4d63d-5320-4e79-a0aa-253a798c00f9",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "31qsymdbTcEuZyH6",
+          "name": "OpenAi FHK account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $('new Article pushed to main branch?').item.json.body.repository.owner.name }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $('new Article pushed to main branch?').item.json.body.repository.name }}",
+          "mode": "name"
+        },
+        "filePath": "={{ $json.file }}",
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        180,
+        -480
+      ],
+      "id": "0946b5e3-738f-4df7-9381-c441ea97d967",
+      "name": "Extract file",
+      "webhookId": "f3f1645a-c0e8-4599-9ae4-8e9df46f6e54",
+      "credentials": {
+        "githubApi": {
+          "id": "Rp2IMcrF0duVzdgW",
+          "name": "GitHub account DevRel "
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1340,
+        420
+      ],
+      "id": "b36ed785-d890-4349-a182-93825fe3c9a8",
+      "name": "Manual Test"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "=  {\n    \"body\": {\n      \"ref\": \"refs/heads/main\",\n      \"before\": \"289ddf79dcc42fe60f59845d38f5463ecc6e31bb\",\n      \"after\": \"dc41f59a270960d0bb898a54fd61b110f238896d\",\n      \"repository\": {\n        \"id\": 1012406669,\n        \"node_id\": \"R_kgDOPFgZjQ\",\n        \"name\": \"test-n8n-devcenter\",\n        \"full_name\": \"Theosakamg/test-n8n-devcenter\",\n        \"private\": false,\n        \"owner\": {\n          \"name\": \"Theosakamg\",\n          \"email\": \"mick.gaillard@gmail.com\",\n          \"login\": \"Theosakamg\",\n          \"id\": 1913401,\n          \"node_id\": \"MDQ6VXNlcjE5MTM0MDE=\",\n          \"avatar_url\": \"https://avatars.githubusercontent.com/u/1913401?v=4\",\n          \"gravatar_id\": \"\",\n          \"url\": \"https://api.github.com/users/Theosakamg\",\n          \"html_url\": \"https://github.com/Theosakamg\",\n          \"followers_url\": \"https://api.github.com/users/Theosakamg/followers\",\n          \"following_url\": \"https://api.github.com/users/Theosakamg/following{/other_user}\",\n          \"gists_url\": \"https://api.github.com/users/Theosakamg/gists{/gist_id}\",\n          \"starred_url\": \"https://api.github.com/users/Theosakamg/starred{/owner}{/repo}\",\n          \"subscriptions_url\": \"https://api.github.com/users/Theosakamg/subscriptions\",\n          \"organizations_url\": \"https://api.github.com/users/Theosakamg/orgs\",\n          \"repos_url\": \"https://api.github.com/users/Theosakamg/repos\",\n          \"events_url\": \"https://api.github.com/users/Theosakamg/events{/privacy}\",\n          \"received_events_url\": \"https://api.github.com/users/Theosakamg/received_events\",\n          \"type\": \"User\",\n          \"user_view_type\": \"public\",\n          \"site_admin\": false\n        },\n        \"html_url\": \"https://github.com/Theosakamg/test-n8n-devcenter\",\n        \"description\": null,\n        \"fork\": false,\n        \"url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter\",\n        \"forks_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/forks\",\n        \"keys_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/keys{/key_id}\",\n        \"collaborators_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/collaborators{/collaborator}\",\n        \"teams_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/teams\",\n        \"hooks_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/hooks\",\n        \"issue_events_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/issues/events{/number}\",\n        \"events_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/events\",\n        \"assignees_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/assignees{/user}\",\n        \"branches_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/branches{/branch}\",\n        \"tags_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/tags\",\n        \"blobs_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/git/blobs{/sha}\",\n        \"git_tags_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/git/tags{/sha}\",\n        \"git_refs_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/git/refs{/sha}\",\n        \"trees_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/git/trees{/sha}\",\n        \"statuses_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/statuses/{sha}\",\n        \"languages_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/languages\",\n        \"stargazers_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/stargazers\",\n        \"contributors_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/contributors\",\n        \"subscribers_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/subscribers\",\n        \"subscription_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/subscription\",\n        \"commits_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/commits{/sha}\",\n        \"git_commits_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/git/commits{/sha}\",\n        \"comments_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/comments{/number}\",\n        \"issue_comment_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/issues/comments{/number}\",\n        \"contents_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/contents/{+path}\",\n        \"compare_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/compare/{base}...{head}\",\n        \"merges_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/merges\",\n        \"archive_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/{archive_format}{/ref}\",\n        \"downloads_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/downloads\",\n        \"issues_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/issues{/number}\",\n        \"pulls_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/pulls{/number}\",\n        \"milestones_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/milestones{/number}\",\n        \"notifications_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/notifications{?since,all,participating}\",\n        \"labels_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/labels{/name}\",\n        \"releases_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/releases{/id}\",\n        \"deployments_url\": \"https://api.github.com/repos/Theosakamg/test-n8n-devcenter/deployments\",\n        \"created_at\": 1751448802,\n        \"updated_at\": \"2025-07-02T15:16:06Z\",\n        \"pushed_at\": 1751469468,\n        \"git_url\": \"git://github.com/Theosakamg/test-n8n-devcenter.git\",\n        \"ssh_url\": \"git@github.com:Theosakamg/test-n8n-devcenter.git\",\n        \"clone_url\": \"https://github.com/Theosakamg/test-n8n-devcenter.git\",\n        \"svn_url\": \"https://github.com/Theosakamg/test-n8n-devcenter\",\n        \"homepage\": null,\n        \"size\": 15,\n        \"stargazers_count\": 0,\n        \"watchers_count\": 0,\n        \"language\": null,\n        \"has_issues\": true,\n        \"has_projects\": true,\n        \"has_downloads\": true,\n        \"has_wiki\": true,\n        \"has_pages\": false,\n        \"has_discussions\": false,\n        \"forks_count\": 0,\n        \"mirror_url\": null,\n        \"archived\": false,\n        \"disabled\": false,\n        \"open_issues_count\": 0,\n        \"license\": null,\n        \"allow_forking\": true,\n        \"is_template\": false,\n        \"web_commit_signoff_required\": false,\n        \"topics\": [],\n        \"visibility\": \"public\",\n        \"forks\": 0,\n        \"open_issues\": 0,\n        \"watchers\": 0,\n        \"default_branch\": \"main\",\n        \"stargazers\": 0,\n        \"master_branch\": \"main\"\n      },\n      \"pusher\": {\n        \"name\": \"flovntp\",\n        \"email\": \"flovntp@gmail.com\"\n      },\n      \"sender\": {\n        \"login\": \"flovntp\",\n        \"id\": 1842696,\n        \"node_id\": \"MDQ6VXNlcjE4NDI2OTY=\",\n        \"avatar_url\": \"https://avatars.githubusercontent.com/u/1842696?v=4\",\n        \"gravatar_id\": \"\",\n        \"url\": \"https://api.github.com/users/flovntp\",\n        \"html_url\": \"https://github.com/flovntp\",\n        \"followers_url\": \"https://api.github.com/users/flovntp/followers\",\n        \"following_url\": \"https://api.github.com/users/flovntp/following{/other_user}\",\n        \"gists_url\": \"https://api.github.com/users/flovntp/gists{/gist_id}\",\n        \"starred_url\": \"https://api.github.com/users/flovntp/starred{/owner}{/repo}\",\n        \"subscriptions_url\": \"https://api.github.com/users/flovntp/subscriptions\",\n        \"organizations_url\": \"https://api.github.com/users/flovntp/orgs\",\n        \"repos_url\": \"https://api.github.com/users/flovntp/repos\",\n        \"events_url\": \"https://api.github.com/users/flovntp/events{/privacy}\",\n        \"received_events_url\": \"https://api.github.com/users/flovntp/received_events\",\n        \"type\": \"User\",\n        \"user_view_type\": \"public\",\n        \"site_admin\": false\n      },\n      \"created\": false,\n      \"deleted\": false,\n      \"forced\": false,\n      \"base_ref\": null,\n      \"compare\": \"https://github.com/Theosakamg/test-n8n-devcenter/compare/289ddf79dcc4...dc41f59a2709\",\n      \"commits\": [\n        {\n          \"id\": \"dc41f59a270960d0bb898a54fd61b110f238896d\",\n          \"tree_id\": \"bf63ef772252418de11a01a7c516bb341bbd6851\",\n          \"distinct\": true,\n          \"message\": \"update\",\n          \"timestamp\": \"2025-07-02T17:17:44+02:00\",\n          \"url\": \"https://github.com/Theosakamg/test-n8n-devcenter/commit/dc41f59a270960d0bb898a54fd61b110f238896d\",\n          \"author\": {\n            \"name\": \"Florent Huck\",\n            \"email\": \"flovntp@gmail.com\",\n            \"username\": \"flovntp\"\n          },\n          \"committer\": {\n            \"name\": \"Florent Huck\",\n            \"email\": \"flovntp@gmail.com\",\n            \"username\": \"flovntp\"\n          },\n          \"added\": [\n            \"dev/content/posts/deploying-clamav-onetime-test3.md\",\n            \"dev/content/posts/deploying-clamav-service-test3.md\",\n            \"dev/content/posts/test-blogpost7.md\"\n          ],\n          \"removed\": [],\n          \"modified\": []\n        }\n      ],\n      \"head_commit\": {\n        \"id\": \"dc41f59a270960d0bb898a54fd61b110f238896d\",\n        \"tree_id\": \"bf63ef772252418de11a01a7c516bb341bbd6851\",\n        \"distinct\": true,\n        \"message\": \"update\",\n        \"timestamp\": \"2025-07-02T17:17:44+02:00\",\n        \"url\": \"https://github.com/Theosakamg/test-n8n-devcenter/commit/dc41f59a270960d0bb898a54fd61b110f238896d\",\n        \"author\": {\n          \"name\": \"Florent Huck\",\n          \"email\": \"flovntp@gmail.com\",\n          \"username\": \"flovntp\"\n        },\n        \"committer\": {\n          \"name\": \"Florent Huck\",\n          \"email\": \"flovntp@gmail.com\",\n          \"username\": \"flovntp\"\n        },\n        \"added\": [\n          \"dev/content/posts/deploying-clamav-onetime-test3.md\",\n          \"dev/content/posts/deploying-clamav-service-test3.md\",\n          \"dev/content/posts/deploying-clamav-service-test-png.png\",\n          \"other/content/posts/deploying-clamav-service-test-invalid.md\",\n          \"dev/content/posts/test-blogpost7.md\",\n          \"static/images/test-image.png\"\n        ],\n        \"removed\": [],\n        \"modified\": []\n      }\n    },\n    \"headers\": {\n      \"host\": \"www.master-7rqtwti-s63hpon2x62wk.eu-5.platformsh.site\",\n      \"connection\": \"close\",\n      \"transfer-encoding\": \"chunked\",\n      \"x-forwarded-proto\": \"https\",\n      \"x-client-ip\": \"140.82.115.168\",\n      \"x-client-ssl\": \"on\",\n      \"x-original-route\": \"https://www.{default}/\",\n      \"client-country\": \"us\",\n      \"x-forwarded-for\": \"140.82.115.168\",\n      \"x-github-hook-installation-target-id\": \"1012406669\",\n      \"content-type\": \"application/json\",\n      \"x-github-delivery\": \"b687c2e0-5757-11f0-913b-2b63b8ada2d7\",\n      \"x-client-verify\": \"NONE\",\n      \"user-agent\": \"GitHub-Hookshot/2bbfd1f\",\n      \"x-github-hook-installation-target-type\": \"repository\",\n      \"client-abuse-score\": \"-2\",\n      \"x-github-hook-id\": \"555629213\",\n      \"accept\": \"*/*\",\n      \"client-asn\": \"36459\",\n      \"x-github-event\": \"push\",\n      \"traceparent\": \"00-184e7833d903bb150815325f14b7abcf-984b2f6fe57ff323-01\",\n      \"accept-encoding\": \"gzip\"\n    },\n    \"query\": {}\n  }\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1180,
+        420
+      ],
+      "id": "955d6787-3979-4bf3-8190-3a572e41d68b",
+      "name": "Simulate data"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1140,
+        -500
+      ],
+      "id": "00f1c5c6-2d68-4df8-b09c-64b0e1a8fa95",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"file\": \"{{ $json[\"body.head_commit.added\"] }}\",\n  \"url\": \"https://devcenter.upsun.com/posts/{{ $json[\"body.head_commit.added\"].split('/').pop().replace('.md', '') }}/\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        -500
+      ],
+      "id": "5be49d52-a4e2-4619-9e02-1ee5ad43e93e",
+      "name": "Extract DevCenter URL"
+    },
+    {
+      "parameters": {
+        "content": "## Iterate over Articles (files pushed)",
+        "height": 860,
+        "width": 1420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        -720
+      ],
+      "typeVersion": 1,
+      "id": "c16840f5-f8d7-4bfd-bebf-d26fb23f0381",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Main Request",
+        "height": 960,
+        "width": 3460,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1420,
+        -760
+      ],
+      "typeVersion": 1,
+      "id": "c20ae2bf-e809-4819-a958-d0eb7e412b72",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Maintenance Mode",
+        "height": 360,
+        "width": 580,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1420,
+        280
+      ],
+      "typeVersion": 1,
+      "id": "e6643f1c-d2d6-4b9b-bd97-76d9d127b322",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3a216cbf-b655-4202-8e9d-7701809350bf",
+              "leftValue": "={{ $json.body.ref }}",
+              "rightValue": "refs/heads/main",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "34bbf6d7-6400-4ae7-adbe-ed6d4fa33cd0",
+              "leftValue": "={{ $json.body.head_commit.added }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "bde7680d-7517-4b2b-99f8-efcf38dd7984",
+              "leftValue": "={{ $json.body.head_commit.added.filter(f => f.endsWith('.md')).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1040,
+        -460
+      ],
+      "id": "69c049de-4f72-4d01-9cbe-59fe3c3dbfe3",
+      "name": "new Article pushed to main branch?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fdbc4e7d-9d93-44c7-971f-4b11676affc6",
+              "leftValue": "={{ $json[\"body.head_commit.added\"] }}",
+              "rightValue": "dev/content/posts/",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            },
+            {
+              "id": "110a96f1-4a2e-4b00-91b6-e3f8c4366585",
+              "leftValue": "={{ $json[\"body.head_commit.added\"] }}",
+              "rightValue": ".md",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -540,
+        -480
+      ],
+      "id": "e82a0c0c-7151-438d-823b-3aaa52c878d5",
+      "name": "If is a new post.md"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.head_commit.added",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -760,
+        -480
+      ],
+      "id": "6032bfa2-1ec1-4d5f-ab42-df2888dc66a8",
+      "name": "Iterate on all added files"
+    },
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "upsun",
+          "mode": "list",
+          "cachedResultName": "upsun",
+          "cachedResultUrl": "https://github.com/upsun"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "devcenter",
+          "mode": "list",
+          "cachedResultName": "devcenter",
+          "cachedResultUrl": "https://github.com/upsun/devcenter"
+        },
+        "events": [
+          "push"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1320,
+        -460
+      ],
+      "id": "d0ab938f-bc3a-4c68-ae92-937a1c2d7af5",
+      "name": "Github Repo DevCenter",
+      "webhookId": "d88ffbd2-a29d-4f5f-8647-9dfa1283483d",
+      "credentials": {
+        "githubApi": {
+          "id": "Rp2IMcrF0duVzdgW",
+          "name": "GitHub account DevRel "
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "let message = `{\n\t\"blocks\": [\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"Hello @marketing_team,\\\\nnew blogposts have been published on the DevCenter !\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"divider\"\n\t\t}\n`;\n\nfor (const item of $input.all()) {\n  const { url, title, output, authors, image } = item.json;\n  const title_esc = title.replaceAll('\"', '').replaceAll(\"\\n\", \"\\\\n\");\n  const output_esc = output.replaceAll('\"', '').replaceAll(\"\\n\", \"\\\\n\");\n  message += `,\n      {\n          \"type\": \"header\",\n          \"text\": {\n              \"type\": \"plain_text\",\n              \"text\": \"${title_esc}\",\n              \"emoji\": true\n          }\n      },\n      {\n          \"type\": \"section\",\n          \"text\": {\n              \"type\": \"mrkdwn\",\n              \"text\": \"> ${output_esc}\"\n          },\n          \"accessory\": {\n            \"type\": \"image\",\n            \"image_url\": \"${image}\",\n            \"alt_text\": \"${image}\"\n          }\n      },\n      {\n          \"type\": \"section\",\n          \"text\": {\n              \"type\": \"mrkdwn\",\n              \"text\": \"Authors: ${authors}\"\n          },\n          \"accessory\": {\n              \"type\": \"button\",\n              \"text\": {\n                  \"type\": \"plain_text\",\n                  \"text\": \"Go to DevCenter\",\n                  \"emoji\": true\n              },\n              \"value\": \"go-to-devcenter\",\n              \"url\": \"${url}\",\n              \"action_id\": \"button-action\"\n          }\n      },\n      {\n          \"type\": \"divider\"\n      }\n  `;\n}\n\nmessage += `]}`;\n\nreturn [\n  {\n    json: {\n      text: message\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1380,
+        -500
+      ],
+      "id": "1637e7ec-b4ac-449b-a269-a76339d2b750",
+      "name": "Create Slack message"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (let i = 0; i < $input.all().length; i++) \n{\n  const item = $input.all()[i];\n  \n  const markdown = $(\"Extract GH Content\").all().at(i).json.data;\n\n  // Utiliser une expression régulière pour isoler le frontmatter\n  const frontmatterMatch = markdown.match(/^---\\n([\\s\\S]*?)\\n---/);\n  \n  if (frontmatterMatch) {\n    const frontmatter = frontmatterMatch[1];\n  \n    // Extract Title\n    const titleMatch = frontmatter.match(/^title:\\s*[\"']?(.*?)[\"']?$/m);\n  \n    if (titleMatch) {\n      const title = titleMatch[1];\n      item.json.title = title;\n    } else {\n      item.json.title = \"Title undefined\";\n    }\n\n    // Extract Authors\n    const authorsBlockMatch = frontmatter.match(/author:\\s*\\n((\\s*-\\s*.+\\n)+)/);\n    if (authorsBlockMatch) {\n      const authorLines = authorsBlockMatch[1];\n      const authorMatches = [...authorLines.matchAll(/-\\s*(.+)/g)];\n      const authors = authorMatches\n        .map(m => {\n          const username = m[1].trim();\n          return `<https://github.com/${username}|${username}>`;\n        })\n        .join(', ');\n      item.json.authors = authors || \"Unknown\";\n    } else {\n      item.json.authors = \"Unknown\";\n    }\n\n    // Extract image\n    const imageMatch = frontmatter.match(/^image:\\s*[\"']?(.*?)[\"']?$/m);\n\n    if (imageMatch && imageMatch[1]) {\n      const imageUrl = imageMatch[1].startsWith('https://') \n        ? imageMatch[1]\n        : `https://devcenter.upsun.com${imageMatch[1]}`;\n    \n      item.json.image = imageUrl;\n    } else {\n      item.json.image = null; \n    }\n\n  } else {\n    item.json.title = \"Not a well formated article\"; \n    item.json.authors = \"Not a well formated article\"; \n    item.json.image = null;\n  }\n}\n\nreturn $input.all();\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        -600
+      ],
+      "id": "bf2ad3f1-c4a1-43ba-b35f-949b3e887963",
+      "name": "Extract Title+authors+image"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {
+          "keepSource": "json"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        380,
+        -480
+      ],
+      "id": "258bae7b-0c19-4233-aecf-df1b429d37d2",
+      "name": "Extract GH Content"
+    },
+    {
+      "parameters": {
+        "amount": 7,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1600,
+        -500
+      ],
+      "id": "e37c800f-5930-40f7-8fae-701c290b751d",
+      "name": "Wait 7min",
+      "webhookId": "238ce0bf-d481-4fa9-a5b9-f6ed775232e6",
+      "notesInFlow": true,
+      "notes": "This is the minimum timeframe for the production environment to redeploy (Hugo treatments are a bit long)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract file": {
+      "main": [
+        [
+          {
+            "node": "Extract GH Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Test": {
+      "main": [
+        [
+          {
+            "node": "Simulate data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulate data": {
+      "main": [
+        [
+          {
+            "node": "new Article pushed to main branch?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Create Slack message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract DevCenter URL": {
+      "main": [
+        [
+          {
+            "node": "Extract file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "new Article pushed to main branch?": {
+      "main": [
+        [
+          {
+            "node": "Iterate on all added files",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "If is a new post.md": {
+      "main": [
+        [
+          {
+            "node": "Extract DevCenter URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iterate on all added files": {
+      "main": [
+        [
+          {
+            "node": "If is a new post.md",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Github Repo DevCenter": {
+      "main": [
+        [
+          {
+            "node": "new Article pushed to main branch?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Slack message": {
+      "main": [
+        [
+          {
+            "node": "Wait 7min",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Title+authors+image": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract GH Content": {
+      "main": [
+        [
+          {
+            "node": "Extract Title+authors+image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 7min": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8d6697b9-eafe-4570-8ee9-670b04618b50",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d6708110c989370bf34e25d991a86ba4dcab49fb3abf9a1cac0c4774d8d53b8e"
+  },
+  "id": "HzinNSbwMgYFQyxN",
+  "tags": [
+    {
+      "createdAt": "2025-03-13T16:12:38.979Z",
+      "updatedAt": "2025-03-13T16:12:38.979Z",
+      "id": "wq6hX0XhsijoCzrR",
+      "name": "Advocacy Team"
+    }
+  ]
+}
