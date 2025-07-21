@@ -1,0 +1,107 @@
+stages:
+  - deploy
+  - cleanup
+
+variables:
+  GIT_STRATEGY: clone
+  GIT_DEPTH: 0  # Full clone for accurate branch history
+
+.setup_ssh: &setup_ssh
+  - echo "Setup SSH"
+  - mkdir -p ~/.ssh
+  - echo "$UPSUN_SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - ssh-keyscan -H git.us-3.platform.sh >> ~/.ssh/known_hosts
+
+.access_token: &access_token
+  - |
+    export UPSUN_ACCESS_TOKEN=$(curl -u platform-api-user: \
+      -d "grant_type=api_token&api_token=$UPSUN_API_TOKEN" \
+      https://auth.upsun.com/oauth2/token | jq -r .access_token)
+
+# Deploy on push to branches and new merge requests
+deploy_to_upsun:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl jq git openssh
+    - *setup_ssh
+    - *access_token
+  script:
+    - |
+      echo "Configure Git"
+      git config --global user.email "gitlab-ci@example.com"
+      git config --global user.name "GitLab CI"
+      
+      echo "Add Upsun remote"
+      git remote add upsun $UPSUN_GIT_REMOTE
+      
+      echo "Checkout branch and push to Upsun"
+      git checkout -B $CI_COMMIT_REF_NAME
+      git push upsun $CI_COMMIT_REF_NAME
+
+      echo "Activate environment"
+      echo "UPSUN_ACCESS_TOKEN: $UPSUN_ACCESS_TOKEN"
+      curl -s -X POST \
+        -H "Authorization: Bearer $UPSUN_ACCESS_TOKEN" \
+        -H "Content-Type: application/json" \
+        "https://api.upsun.com/projects/$UPSUN_PROJECT_ID/environments/main/activate"
+
+  only:
+    - merge_requests
+  except:
+    - main  # Adjust based on your default branch
+
+# Deploy to production
+deploy_production:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl jq git openssh
+    - *setup_ssh
+  script:
+    - |
+      git config --global user.email "gitlab-ci@example.com"
+      git config --global user.name "GitLab CI"
+      git remote add upsun $UPSUN_GIT_REMOTE || git remote set-url upsun $UPSUN_GIT_REMOTE
+      git push upsun main --force
+  only:
+    - main  # Adjust based on your default branch
+
+# Cleanup environments when branches are deleted or MRs are merged
+cleanup_environment:
+  stage: cleanup
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl jq git openssh
+    - *setup_ssh
+    - *access_token
+  script:
+    - |
+      # Get the source branch name from the merge request
+      BRANCH_NAME="${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+      
+      if [ -z "$BRANCH_NAME" ]; then
+        echo "No branch name found, skipping cleanup"
+        exit 0
+      fi
+      
+      echo "Cleaning up Upsun environment: $BRANCH_NAME"
+      
+      # Delete the branch from Upsun remote
+      git push upsun --delete "$BRANCH_NAME" || echo "Branch already deleted from remote"
+      
+      # Deactivate the environment via API
+      curl -s -X POST \
+        -H "Authorization: Bearer $UPSUN_ACCESS_TOKEN" \
+        -H "Content-Type: application/json" \
+        "https://api.upsun.com/projects/$UPSUN_PROJECT_ID/environments/$BRANCH_NAME/deactivate" || echo "Environment deactivation failed"
+      
+      # Optionally delete the environment completely
+      curl -s -X DELETE \
+        -H "Authorization: Bearer $UPSUN_ACCESS_TOKEN" \
+        "https://api.upsun.com/projects/$UPSUN_PROJECT_ID/environments/$BRANCH_NAME" || echo "Environment deletion failed"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: manual
+  allow_failure: true
