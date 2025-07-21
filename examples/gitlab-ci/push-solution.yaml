@@ -11,7 +11,7 @@ variables:
   - mkdir -p ~/.ssh
   - echo "$UPSUN_SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
   - chmod 600 ~/.ssh/id_rsa
-  - ssh-keyscan -H git.us-3.platform.sh >> ~/.ssh/known_hosts
+  - ssh-keyscan -H git.$UPSUN_REGION.platform.sh >> ~/.ssh/known_hosts
 
 .access_token: &access_token
   - |
