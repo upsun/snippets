@@ -1,0 +1,3 @@
+magnolia.publishing.receivers[0].name=magnoliaPublic${PORT}
+magnolia.publishing.receivers[0].url=http://localhost:${PORT}/magnoliaPublic
+magnolia.publishing.receivers[0].enabled=true
