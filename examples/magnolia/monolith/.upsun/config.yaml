@@ -1,0 +1,66 @@
+# Complete list of all available properties: https://docs.upsun.com/create-apps/app-reference.html
+applications:
+  magnolia:
+    source:
+      root: "/"
+    type: "java:19"
+    mounts:
+      '/logs': { source: storage, source_path: logs }
+      '/conf': { source: storage, source_path: conf }
+      '/work/Catalina/localhost': { source: storage, source_path: work }
+      '/conf/Catalina/localhost': { source: storage, source_path: localhost }
+      '/webapps/magnoliaAuthor/logs': { source: storage, source_path: author-logs }
+      '/webapps/magnoliaAuthor/tmp': { source: storage, source_path: author-tmp }
+      '/webapps/magnoliaAuthor/cache': { source: storage, source_path: author-cache }
+      '/webapps/magnoliaAuthor/modules': { source: storage, source_path: author-modules }
+      '/webapps/magnoliaAuthor/repositories': { source: storage, source_path: author-repositories }
+      '/webapps/magnoliaAuthor/WEB-INF': { source: storage, source_path: author-webinf }
+      '/webapps/magnoliaPublic/logs': { source: storage, source_path: public-logs }
+      '/webapps/magnoliaPublic/tmp': { source: storage, source_path: public-tmp }
+      '/webapps/magnoliaPublic/cache': { source: storage, source_path: public-cache }
+      '/webapps/magnoliaPublic/docroot': { source: storage, source_path: public-docroot }
+      '/webapps/magnoliaPublic/modules': { source: storage, source_path: public-modules }
+      '/webapps/magnoliaPublic/repositories': { source: storage, source_path: public-repositories }
+      '/webapps/magnoliaPublic/META-INF': { source: storage, source_path: public-webinf }
+      '/webapps/magnoliaPublic/WEB-INF': { source: storage, source_path: public-webinf }
+      '/temp': { source: storage, source_path: temp }
+    web:
+      commands:
+        pre_start: |
+          # server.xml dynamic settings
+          mv conf-tmp/* conf/ && rmdir conf-tmp
+          envsubst < conf/server.xml.template > conf/server.xml
+          # microprofile-config.properties dynamic settings
+          mv webapps/magnoliaAuthor/WEB-INF-UPSUN/* webapps/magnoliaAuthor/WEB-INF/ && rmdir webapps/magnoliaAuthor/WEB-INF-UPSUN
+          envsubst < webapps/magnoliaAuthor/WEB-INF/config/default/microprofile-config.properties.template > webapps/magnoliaAuthor/WEB-INF/config/default/microprofile-config.properties
+          # copy commands from magnolia_control.sh
+          rsync -arzvp webapps/magnoliaAuthor/docroot/  webapps/magnoliaPublic/docroot
+          rsync -arzvp webapps/magnoliaAuthor/modules/  webapps/magnoliaPublic/modules
+          rsync -arzvp webapps/magnoliaAuthor/META-INF/ webapps/magnoliaPublic/META-INF
+          rsync -arzvp webapps/magnoliaAuthor/WEB-INF/  webapps/magnoliaPublic/WEB-INF
+          # remove previous .lock files
+          rm -Rf webapps/magnoliaAuthor/repositories/magnolia/.lock
+          rm -Rf webapps/magnoliaPublic/repositories/magnolia/.lock          
+        start: ./bin/catalina.sh run all --ignore-open-files-limit
+      upstream:
+        socket_family: tcp
+      locations:
+        "/":
+          passthru: true
+    build:
+      flavor: none
+    hooks:
+      build: |
+        set -eux        
+        # avoid empty folders when mounts will be mounted
+        mv conf conf-upsun
+        mv webapps/magnoliaAuthor/WEB-INF webapps/magnoliaAuthor/WEB-INF-UPSUN        
+routes:
+  "https://{default}/":
+    type: upstream
+    upstream: "magnolia:http"
+  # A basic redirect definition
+  # More information: https://docs.upsun.com/define-routes.html#basic-redirect-definition
+  "https://www.{default}":
+    type: redirect
+    to: "https://{default}/"
