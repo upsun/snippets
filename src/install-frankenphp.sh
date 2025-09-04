@@ -85,5 +85,5 @@ ensure_environment() {
 
 ensure_environment
 # Get Latest version from php repo
-VERSION=$(curl --silent "https://api.github.com/repos/dunglas/frankenphp/releases" | jq -r '.[0].name');
+VERSION=$(curl --silent "https://api.github.com/repos/php/frankenphp/releases" | jq -r '.[0].name');
 run "frankenphp" "$VERSION"
