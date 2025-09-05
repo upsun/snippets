@@ -85,5 +85,6 @@ ensure_environment() {
 
 ensure_environment
 # Get Latest version from php repo
+# Require authorization due to rate limit on CI, it requires public read only
 VERSION=$(curl --silent -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/php/frankenphp/releases" | jq -r '.[0].name');
 run "frankenphp" "$VERSION"
