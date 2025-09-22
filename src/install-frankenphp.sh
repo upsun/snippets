@@ -59,7 +59,7 @@ download_binary() {
    echo "---------------------------------------------------------------------"
    FRANKENPHP_PROJECT=$1;
    FRANKENPHP_VERSION=$2;
-   wget https://github.com/dunglas/frankenphp/releases/download/$FRANKENPHP_VERSION/frankenphp-linux-x86_64
+   wget https://github.com/php/frankenphp/releases/download/$FRANKENPHP_VERSION/frankenphp-linux-x86_64
    mv frankenphp-linux-x86_64 ${FRANKENPHP_PROJECT}
    echo "Success"
 }
@@ -84,6 +84,7 @@ ensure_environment() {
 }
 
 ensure_environment
-# Get Latest version from Kevin Dunglas repo
-VERSION=$(curl --silent "https://api.github.com/repos/dunglas/frankenphp/releases" | jq -r '.[0].name');
+# Get Latest version from php repo
+# Require authorization due to rate limit on CI, it requires public read only
+VERSION=$(curl --silent -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/php/frankenphp/releases" | jq -r '.[0].name');
 run "frankenphp" "$VERSION"
