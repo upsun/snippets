@@ -172,6 +172,6 @@ routes:
         - '/^wp-*/'
   # A basic redirect definition
   # More information: https://docs.upsun.com/define-routes.html#basic-redirect-definition
-  "https://www.{default}":
+  "http://www.{default}":
     type: redirect
     to: "https://{default}/"
