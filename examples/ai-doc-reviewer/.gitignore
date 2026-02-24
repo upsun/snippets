@@ -1,0 +1,19 @@
+# Python & virtual environments
+venv/
+__pycache__/
+*.pyc
+
+# Environment variables
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node modules (if any frontend JS tooling)
+node_modules/
+.env
+.DS_Store

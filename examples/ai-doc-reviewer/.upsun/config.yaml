@@ -1,0 +1,19 @@
+# Upsun configuration, generated using AI at: 2026-02-22T22:14:04Z
+# AI can make mistakes. Please modify this file to suit your needs.
+applications:
+  backend:
+    type: python:3.13
+    source:
+      root: "/"
+    hooks:
+      build: |
+        set -ex
+        pip install -r backend/requirements.txt  
+    web:
+      commands:
+        start: "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+
+routes:
+  https://{default}/:
+    type: upstream
+    upstream: backend:http

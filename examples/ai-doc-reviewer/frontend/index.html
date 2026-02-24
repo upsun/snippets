@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Empathometer</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body class="light">
+
+<header>
+  <h1>Empathometer</h1>
+  <h2>Check your technical documentation from different personas’ perspectives</h2>
+</header>
+
+<div class="controls">
+  <div class="modes">
+    <span>Theme:</span>
+    <button data-mode="light" class="selected">Light</button>
+    <button data-mode="dark">Dark</button>
+    <button data-mode="pink">Pink</button>
+  </div>
+
+  <div class="personas">
+    <span>Persona:</span>
+    <button data-persona="junior-dev" class="selected">Junior Dev</button>
+    <button data-persona="business-user">Business User</button>
+    <button data-persona="senior-dev">Senior Dev</button>
+    <button data-persona="ai-agent">AI Agent</button>
+  </div>
+</div>
+
+<div class="main-container">
+  <!-- Left: original text -->
+  <div id="editor" contenteditable="true" data-placeholder="Paste your documentation here…"></div>
+
+  <!-- Right: comment sidebar -->
+  <div class="sidebar">
+    <p style="font-size:0.9rem; color:gray;">AI-generated comments will appear here:</p>
+    <div id="comments-container"></div>
+  </div>
+</div>
+
+<button id="analyzeBtn">Analyze</button>
+
+<script src="/static/script.js" defer></script>
+</body>
+</html>

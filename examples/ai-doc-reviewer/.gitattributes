@@ -1,0 +1,17 @@
+# Backend Python files
+backend/*.py linguist-language=Python
+backend/requirements.txt linguist-language=Python
+
+# Ignore Python cache files from language stats
+backend/__pycache__/* linguist-vendored
+
+# Frontend files
+frontend/*.html linguist-language=HTML
+frontend/*.css linguist-language=CSS
+frontend/*.js linguist-language=JavaScript
+
+# Ignore environment files
+backend/.env linguist-vendored
+
+# Ignore other files that shouldn't count toward language stats
+*.DS_Store linguist-vendored
