@@ -1,0 +1,75 @@
+applications:
+  # Node.js frontend application
+  frontend:
+    source:
+      root: frontend
+    type: "nodejs:22"
+
+    build:
+      flavor: none
+
+    hooks:
+      build: |
+        set -e
+        npm install
+        npm run build
+
+    web:
+      commands:
+        start: "node dist/index.js"
+      locations:
+        /:
+          passthru: true
+          allow: false
+          scripts: false
+          rules:
+            \.(css|js|gif|jpe?g|png|svg|ico|woff2?|ttf|eot)$:
+              allow: true
+
+    relationships:
+      redis: "redis:redis"
+
+    mounts:
+      "/.npm":
+        source: storage
+        source_path: npm_cache
+
+  # Python worker application
+  worker:
+    source:
+      root: worker
+    type: "python:3.12"
+
+    build:
+      flavor: none
+
+    hooks:
+      build: |
+        set -e
+        pip install -r requirements.txt
+
+    # Workers don't serve HTTP, they run as background processes
+    workers:
+      digest:
+        commands:
+          start: "python main.py"
+
+    relationships:
+      redis: "redis:redis"
+
+    mounts:
+      "/.cache":
+        source: storage
+        source_path: pip_cache
+
+services:
+  redis:
+    type: "redis:8.0"
+
+routes:
+  "https://{default}/":
+    type: upstream
+    upstream: "frontend:http"
+  "https://www.{default}/":
+    type: redirect
+    to: "https://{default}/"

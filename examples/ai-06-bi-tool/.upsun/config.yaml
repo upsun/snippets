@@ -1,0 +1,79 @@
+applications:
+  bi-tool:
+    type: "nodejs:22"
+
+    variables:
+      env:
+        OPENAI_MODEL: "gpt-4o-mini"
+
+    build:
+      flavor: none
+
+    dependencies:
+      nodejs:
+        pnpm: "9.15.4"
+
+    hooks:
+      build: |
+        set -e
+        echo "Installing dependencies..."
+        pnpm install --frozen-lockfile
+
+        echo "Compiling TypeScript..."
+        pnpm build
+
+        echo "Build complete!"
+
+      deploy: |
+        set -e
+        echo "Seeding database..."
+        node dist/scripts/seed.js
+        echo "Deploy complete!"
+
+    web:
+      commands:
+        start: "node dist/src/index.js"
+      locations:
+        /:
+          passthru: true
+          allow: false
+          scripts: false
+          rules:
+            \.(css|js|gif|jpe?g|png|svg|ico|woff2?|ttf|eot)$:
+              allow: true
+
+    mounts:
+      "/.npm":
+        source: "storage"
+        source_path: "npm_cache"
+      "/.pnpm-store":
+        source: "storage"
+        source_path: "pnpm_store"
+
+    relationships:
+      database: "mysql:admin"
+      reports: "mysql:reader"
+
+services:
+  mysql:
+    type: mariadb:11.4
+    configuration:
+      schemas:
+        - main
+      endpoints:
+        admin:
+          default_schema: main
+          privileges:
+            main: admin
+        reader:
+          default_schema: main
+          privileges:
+            main: ro
+
+routes:
+  "https://{default}/":
+    type: upstream
+    upstream: "bi-tool:http"
+  "https://www.{default}/":
+    type: redirect
+    to: "https://{default}/"

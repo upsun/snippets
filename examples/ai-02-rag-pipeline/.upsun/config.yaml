@@ -1,0 +1,88 @@
+applications:
+  chatbot:
+    type: "nodejs:24"
+
+    variables:
+      env:
+        OPENAI_MODEL: "gpt-4o-mini"
+
+    build:
+      flavor: none
+
+    dependencies:
+      nodejs:
+        pnpm: "9.15.4"
+
+    hooks:
+      build: |
+        set -e
+        pnpm install --frozen-lockfile
+
+        echo "Cloning Upsun documentation..."
+        git clone --depth 1 --single-branch --branch main \
+          https://github.com/platformsh/platformsh-docs.git docs
+
+        echo "Compiling TypeScript..."
+        pnpm build
+
+        echo "Build complete!"
+
+      deploy: |
+        set -e
+        echo "Embedding documentation into Qdrant..."
+        pnpm embed
+        echo "Deploy complete!"
+
+    web:
+      commands:
+        start: "node dist/index.js"
+      locations:
+        /:
+          passthru: true
+          allow: false
+          scripts: false
+          rules:
+            \.(css|js|gif|jpe?g|png|svg|ico|woff2?|ttf|eot)$:
+              allow: true
+
+    mounts:
+      "/.npm":
+        source: "storage"
+        source_path: "npm_cache"
+      "/.pnpm-store":
+        source: "storage"
+        source_path: "pnpm_store"
+
+    relationships:
+      qdrant: "qdrant:http"
+
+  qdrant:
+    type: "composable:25.11"
+    container_profile: HIGH_MEMORY
+
+    stack:
+      packages:
+        - "qdrant"
+
+    source:
+      root: "qdrant"
+
+    web:
+      commands:
+        start: "qdrant --config-path /app/config.yaml"
+
+    mounts:
+      "storage":
+        source: "storage"
+        source_path: "storage"
+      "snapshots":
+        source: "storage"
+        source_path: "snapshots"
+
+routes:
+  "https://{default}/":
+    type: upstream
+    upstream: "chatbot:http"
+  "https://www.{default}/":
+    type: redirect
+    to: "https://{default}/"

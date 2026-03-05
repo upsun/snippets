@@ -1,0 +1,75 @@
+log_level: ERROR
+
+storage:
+  storage_path: ./storage
+  snapshots_path: ./snapshots
+
+  snapshots_config:
+    snapshots_storage: local
+
+  temp_path: null
+  on_disk_payload: true
+  update_concurrency: null
+
+  wal:
+    wal_capacity_mb: 32
+    wal_segments_ahead: 0
+
+  node_type: "Normal"
+
+  performance:
+    max_search_threads: 0
+    optimizer_cpu_budget: 0
+    update_rate_limit: null
+
+  optimizers:
+    deleted_threshold: 0.2
+    vacuum_min_vector_number: 1000
+    default_segment_number: 0
+    max_segment_size_kb: null
+    indexing_threshold_kb: 10000
+    flush_interval_sec: 5
+    max_optimization_threads: null
+
+  hnsw_index:
+    m: 16
+    ef_construct: 100
+    full_scan_threshold_kb: 10000
+    max_indexing_threads: 0
+    on_disk: false
+    payload_m: null
+
+  shard_transfer_method: null
+
+  collection:
+    replication_factor: 1
+    write_consistency_factor: 1
+    vectors:
+      on_disk: null
+    quantization: null
+    strict_mode:
+      enabled: false
+      max_query_limit: null
+      max_timeout: null
+      unindexed_filtering_retrieve: null
+      unindexed_filtering_update: null
+      search_max_hnsw_ef: null
+      search_allow_exact: null
+      search_max_oversampling: null
+
+  max_collections: null
+
+service:
+  max_request_size_mb: 32
+  max_workers: 0
+  host: 0.0.0.0
+  http_port: 8888
+  grpc_port: null
+  enable_cors: true
+  enable_tls: false
+  verify_https_client_certificate: false
+
+cluster:
+  enabled: false
+
+telemetry_disabled: true

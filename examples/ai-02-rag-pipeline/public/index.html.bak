@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upsun Documentation Assistant</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+          Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 900px;
+        height: 90vh;
+        max-height: 800px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .header {
+        padding: 24px;
+        border-bottom: 1px solid #e5e7eb;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .header h1 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .header p {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .message {
+        display: flex;
+        gap: 12px;
+        max-width: 85%;
+        animation: fadeIn 0.3s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message.user {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+      }
+
+      .message.assistant {
+        align-self: flex-start;
+      }
+
+      .message-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+
+      .message.user .message-avatar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .message.assistant .message-avatar {
+        background: #f3f4f6;
+        color: #6b7280;
+      }
+
+      .message-content {
+        background: #f3f4f6;
+        padding: 12px 16px;
+        border-radius: 12px;
+        line-height: 1.6;
+        word-wrap: break-word;
+      }
+
+      .message.user .message-content {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .message-content a {
+        color: #667eea;
+        text-decoration: underline;
+      }
+
+      .message.user .message-content a {
+        color: white;
+        opacity: 0.9;
+      }
+
+      .message-content code {
+        background: rgba(0, 0, 0, 0.08);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: "Monaco", "Menlo", "Courier New", monospace;
+        font-size: 0.9em;
+      }
+
+      .message.user .message-content code {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      .message-content pre {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 16px;
+        border-radius: 6px;
+        overflow-x: auto;
+        margin: 12px 0;
+        line-height: 1.5;
+      }
+
+      .message-content pre code {
+        background: transparent;
+        padding: 0;
+        color: inherit;
+        font-size: 0.88em;
+      }
+
+      .message-content ul,
+      .message-content ol {
+        margin: 10px 0;
+        padding-left: 28px;
+      }
+
+      .message-content li {
+        margin: 6px 0;
+      }
+
+      .message-content h1,
+      .message-content h2,
+      .message-content h3 {
+        margin-top: 16px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        line-height: 1.3;
+      }
+
+      .message-content h1 {
+        font-size: 1.4em;
+      }
+
+      .message-content h2 {
+        font-size: 1.25em;
+      }
+
+      .message-content h3 {
+        font-size: 1.1em;
+      }
+
+      .message-content p {
+        margin: 8px 0;
+      }
+
+      .message-content strong {
+        font-weight: 600;
+      }
+
+      .message-content em {
+        font-style: italic;
+      }
+
+      .message-content blockquote {
+        border-left: 3px solid #667eea;
+        padding-left: 12px;
+        margin: 10px 0;
+        color: #6b7280;
+      }
+
+      .message.user .message-content blockquote {
+        border-left-color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .starters {
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+      }
+
+      .starter-btn {
+        padding: 12px 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        text-align: left;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+
+      .starter-btn:hover {
+        border-color: #667eea;
+        background: #f9fafb;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      }
+
+      .input-container {
+        padding: 20px;
+        border-top: 1px solid #e5e7eb;
+        background: #f9fafb;
+      }
+
+      .input-wrapper {
+        display: flex;
+        gap: 12px;
+      }
+
+      .input-wrapper input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .input-wrapper input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .input-wrapper button {
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .input-wrapper button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      .input-wrapper button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .footer {
+        padding: 16px 24px;
+        border-top: 1px solid #e5e7eb;
+        background: #f9fafb;
+        text-align: center;
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .footer a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Upsun Documentation Assistant</h1>
+        <p>Ask me anything about deploying and managing applications on Upsun</p>
+      </div>
+      <div class="chat-container">
+        <div class="messages" id="messages">
+          <div class="starters" id="starters">
+            <button class="starter-btn" data-prompt="How do I deploy a Node.js application?">
+              How do I deploy a Node.js application?
+            </button>
+            <button class="starter-btn" data-prompt="How do I configure PostgreSQL?">
+              How do I configure PostgreSQL?
+            </button>
+            <button class="starter-btn" data-prompt="What is the Upsun CLI?">
+              What is the Upsun CLI?
+            </button>
+            <button class="starter-btn" data-prompt="How do environment variables work?">
+              How do environment variables work?
+            </button>
+          </div>
+        </div>
+        <div class="input-container">
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="input"
+              placeholder="Ask a question about Upsun..."
+              autocomplete="off"
+            />
+            <button id="send">Send</button>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        Powered by OpenAI and LangChain |
+        <a href="https://docs.upsun.com" target="_blank">Full Documentation</a>
+      </div>
+    </div>
+
+    <script>
+      const messagesEl = document.getElementById("messages");
+      const startersEl = document.getElementById("starters");
+      const inputEl = document.getElementById("input");
+      const sendBtn = document.getElementById("send");
+
+      let conversationHistory = [];
+      let isLoading = false;
+
+      // Enhanced markdown parser
+      function parseMarkdown(text) {
+        var html = text;
+
+        // Escape HTML entities first
+        html = html
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+
+        // Code blocks (must be before inline code)
+        html = html.replace(/```([a-z]*)\n?([\s\S]*?)```/g, function (match, lang, code) {
+          return "<pre><code>" + code.trim() + "</code></pre>";
+        });
+
+        // Inline code
+        html = html.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+
+        // Bold (must be before italic to handle ***)
+        html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+        html = html.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+
+        // Italic
+        html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+        html = html.replace(/_([^_]+)_/g, "<em>$1</em>");
+
+        // Headers
+        html = html.replace(/^### (.+)$/gim, "<h3>$1</h3>");
+        html = html.replace(/^## (.+)$/gim, "<h2>$1</h2>");
+        html = html.replace(/^# (.+)$/gim, "<h1>$1</h1>");
+
+        // Links
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+        // Lists - simpler approach
+        html = html.replace(/^[\s]*[-*]\s+(.+)$/gim, "<li>$1</li>");
+        html = html.replace(/^[\s]*\d+\.\s+(.+)$/gim, "<li>$1</li>");
+        
+        // Wrap consecutive <li> tags in <ul>
+        html = html.replace(/(<li>[\s\S]+?<\/li>)/g, function(match) {
+          return "<ul>" + match + "</ul>";
+        });
+
+        // Blockquotes
+        html = html.replace(/^&gt;\s?(.+)$/gim, "<blockquote>$1</blockquote>");
+
+        // Line breaks
+        html = html.replace(/\n\n+/g, "<br><br>");
+        html = html.replace(/\n/g, " ");
+
+        return html;
+      }
+
+      function addMessage(role, content) {
+        if (startersEl && !startersEl.classList.contains("hidden")) {
+          startersEl.classList.add("hidden");
+        }
+
+        var messageDiv = document.createElement("div");
+        messageDiv.className = "message " + role;
+
+        var avatar = document.createElement("div");
+        avatar.className = "message-avatar";
+        avatar.textContent = role === "user" ? "U" : "A";
+
+        var contentDiv = document.createElement("div");
+        contentDiv.className = "message-content";
+        contentDiv.innerHTML = parseMarkdown(content);
+
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(contentDiv);
+        messagesEl.appendChild(messageDiv);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+
+        return contentDiv;
+      }
+
+      async function sendMessage(message) {
+        if (!message.trim() || isLoading) return;
+
+        isLoading = true;
+        sendBtn.disabled = true;
+        inputEl.value = "";
+
+        addMessage("user", message);
+        var assistantContent = addMessage("assistant", "");
+        var fullResponse = "";
+
+        try {
+          var response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: message,
+              history: conversationHistory,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("HTTP " + response.status + ": " + response.statusText);
+          }
+
+          var reader = response.body.getReader();
+          var decoder = new TextDecoder();
+          var buffer = "";
+
+          while (true) {
+            var result = await reader.read();
+            var done = result.done;
+            var value = result.value;
+
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            var lines = buffer.split("\n");
+            buffer = lines.pop() || "";
+
+            for (var i = 0; i < lines.length; i++) {
+              var line = lines[i];
+              if (line.startsWith("data: ")) {
+                var data = line.slice(6);
+                if (data === "[DONE]") {
+                  conversationHistory.push({ role: "user", content: message });
+                  conversationHistory.push({ role: "assistant", content: fullResponse });
+                  isLoading = false;
+                  sendBtn.disabled = false;
+                  inputEl.focus();
+                  return;
+                }
+                try {
+                  var chunk = JSON.parse(data);
+                  fullResponse += chunk;
+                  assistantContent.innerHTML = parseMarkdown(fullResponse);
+                  messagesEl.scrollTop = messagesEl.scrollHeight;
+                } catch (err) {
+                  // Skip invalid JSON
+                }
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Chat error:", err);
+          assistantContent.textContent = "Sorry, an error occurred. Please try again.";
+          isLoading = false;
+          sendBtn.disabled = false;
+        }
+      }
+
+      // Event listeners
+      sendBtn.addEventListener("click", function() { sendMessage(inputEl.value); });
+
+      inputEl.addEventListener("keypress", function(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage(inputEl.value);
+        }
+      });
+
+      document.querySelectorAll(".starter-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          var prompt = btn.dataset.prompt;
+          inputEl.value = prompt;
+          sendMessage(prompt);
+        });
+      });
+
+      inputEl.focus();
+    </script>
+  </body>
+</html>

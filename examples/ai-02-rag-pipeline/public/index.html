@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upsun Docs Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Manrope:wght@500;600&family=Space+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        /* Color tokens from design */
+        --accent-lime: #C4F82A;
+        --accent-purple: #7C3AED;
+        --accent-orange: #FA541C;
+        --accent-green: #15803D;
+        --bg-page: #0A0A0A;
+        --bg-card: #18181B;
+        --bg-elevated: #27272A;
+        --border-subtle: #27272A;
+        --border-muted: #3F3F46;
+        --text-primary: #FFFFFF;
+        --text-secondary: #A1A1AA;
+        --text-tertiary: #71717A;
+        --text-muted: #52525B;
+        --text-inverted: #0A0A0A;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg-page);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        color: var(--text-primary);
+      }
+
+      .container {
+        background: var(--bg-card);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 900px;
+        height: 90vh;
+        max-height: 800px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .header {
+        padding: 24px 28px;
+        border-bottom: 1px solid var(--border-subtle);
+        background: var(--bg-card);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--accent-lime);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .logo svg {
+        width: 20px;
+        height: 20px;
+        fill: var(--text-inverted);
+      }
+
+      .header h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .header-actions svg {
+        width: 20px;
+        height: 20px;
+        stroke: var(--text-tertiary);
+        fill: none;
+        stroke-width: 2;
+        cursor: pointer;
+      }
+
+      .header p {
+        font-family: 'Manrope', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+
+      .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        background: var(--bg-page);
+      }
+
+      /* Empty state / Welcome */
+      .welcome {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+        padding: 60px 40px;
+        height: 100%;
+      }
+
+      .welcome-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        background: var(--accent-lime);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .welcome-icon svg {
+        width: 32px;
+        height: 32px;
+        fill: var(--text-inverted);
+      }
+
+      .welcome h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .welcome p {
+        font-family: 'Manrope', sans-serif;
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+
+      .prompts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        width: 100%;
+      }
+
+      .prompt-card {
+        padding: 16px 18px;
+        border: 1px solid var(--border-subtle);
+        border-radius: 14px;
+        background: var(--bg-card);
+        cursor: pointer;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+
+      .prompt-card:hover {
+        border-color: var(--border-muted);
+        background: var(--bg-elevated);
+        transform: translateY(-2px);
+      }
+
+      .prompt-card svg {
+        width: 18px;
+        height: 18px;
+        stroke-width: 2;
+        fill: none;
+      }
+
+      .prompt-card span {
+        font-family: 'Manrope', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .message {
+        display: flex;
+        gap: 12px;
+        max-width: 85%;
+        animation: fadeIn 0.3s ease-in;
+        min-width: 0;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message.user {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+      }
+
+      .message.assistant {
+        align-self: flex-start;
+      }
+
+      .message-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .message.user .message-avatar {
+        background: var(--accent-lime);
+      }
+
+      .message.user .message-avatar svg {
+        width: 16px;
+        height: 16px;
+        fill: var(--text-inverted);
+      }
+
+      .message.assistant .message-avatar {
+        background: var(--bg-elevated);
+      }
+
+      .message.assistant .message-avatar svg {
+        width: 16px;
+        height: 16px;
+        fill: var(--text-primary);
+      }
+
+      .message-content {
+        padding: 12px 16px;
+        border-radius: 16px;
+        line-height: 1.6;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        min-width: 0;
+        white-space: pre-wrap;
+        font-family: 'Manrope', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .message.user .message-content {
+        background: var(--accent-lime);
+        color: var(--text-inverted);
+        border-radius: 16px 16px 4px 16px;
+      }
+
+      .message.assistant .message-content {
+        background: var(--bg-card);
+        color: var(--text-primary);
+        border: 1px solid var(--border-subtle);
+        border-radius: 16px 16px 16px 4px;
+      }
+
+      .message-content a {
+        color: var(--accent-purple);
+        text-decoration: none;
+        word-break: break-word;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .message-content a:hover {
+        text-decoration: underline;
+      }
+
+      .message-content a svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+      }
+
+      .message.user .message-content a {
+        color: var(--text-inverted);
+      }
+
+      .message-content code {
+        background: var(--bg-page);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.9em;
+        word-break: break-all;
+        white-space: normal;
+      }
+
+      .message.user .message-content code {
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      .message-content pre {
+        background: var(--bg-page);
+        color: var(--text-secondary);
+        padding: 14px 16px;
+        border-radius: 10px;
+        overflow-x: auto;
+        margin: 12px 0;
+        line-height: 1.5;
+        max-width: 100%;
+        white-space: pre;
+        border: 1px solid var(--border-subtle);
+      }
+
+      .message-content pre code {
+        background: transparent;
+        padding: 0;
+        color: inherit;
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        word-break: normal;
+        white-space: pre;
+      }
+
+      .message-content ul,
+      .message-content ol {
+        margin: 10px 0;
+        padding-left: 28px;
+        white-space: normal;
+        color: var(--text-secondary);
+      }
+
+      .message-content li {
+        margin: 6px 0;
+        word-wrap: break-word;
+      }
+
+      .message-content h1,
+      .message-content h2,
+      .message-content h3 {
+        margin-top: 16px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        line-height: 1.3;
+        word-wrap: break-word;
+        white-space: normal;
+      }
+
+      .message-content h1 {
+        font-size: 1.4em;
+      }
+
+      .message-content h2 {
+        font-size: 1.25em;
+      }
+
+      .message-content h3 {
+        font-size: 1.1em;
+      }
+
+      .message-content p {
+        margin: 8px 0;
+        word-wrap: break-word;
+        white-space: normal;
+      }
+
+      .message-content strong {
+        font-weight: 600;
+      }
+
+      .message-content em {
+        font-style: italic;
+      }
+
+      .message-content blockquote {
+        border-left: 3px solid var(--accent-purple);
+        padding-left: 12px;
+        margin: 10px 0;
+        color: var(--text-tertiary);
+        word-wrap: break-word;
+        white-space: normal;
+      }
+
+      .input-container {
+        padding: 16px 20px;
+        border-top: 1px solid var(--border-subtle);
+        background: var(--bg-card);
+      }
+
+      .input-wrapper {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .input-field {
+        flex: 1;
+        padding: 14px 18px;
+        border: 1px solid var(--border-muted);
+        border-radius: 14px;
+        background: var(--bg-elevated);
+        font-family: 'Manrope', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary);
+        outline: none;
+      }
+
+      .input-field::placeholder {
+        color: var(--text-muted);
+      }
+
+      .input-field:focus {
+        border-color: var(--accent-purple);
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+      }
+
+      .send-btn {
+        padding: 0;
+        width: 48px;
+        height: 48px;
+        background: var(--accent-lime);
+        color: var(--text-inverted);
+        border: none;
+        border-radius: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .send-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+      }
+
+      .send-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(196, 248, 42, 0.3);
+      }
+
+      .send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .footer {
+        padding: 12px 24px;
+        border-top: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        color: var(--text-tertiary);
+      }
+
+      .footer a {
+        color: var(--accent-purple);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      .footer-sep {
+        color: var(--text-muted);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* RAG Debug Panel */
+      .sources-panel {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 8px;
+        font-size: 12px;
+      }
+
+      .sources-header {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-tertiary);
+        margin-bottom: 8px;
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .sources-header svg {
+        width: 14px;
+        height: 14px;
+        stroke: var(--accent-purple);
+        fill: none;
+        stroke-width: 2;
+      }
+
+      .source-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 8px 10px;
+        background: var(--bg-card);
+        border-radius: 6px;
+        margin-bottom: 6px;
+      }
+
+      .source-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .source-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .source-title a {
+        color: var(--accent-purple);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 12px;
+      }
+
+      .source-title a:hover {
+        text-decoration: underline;
+      }
+
+      .source-score {
+        font-family: 'Space Mono', monospace;
+        font-size: 10px;
+        color: var(--text-muted);
+        background: var(--bg-page);
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+
+      .source-snippet {
+        color: var(--text-tertiary);
+        font-size: 11px;
+        line-height: 1.4;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+
+      /* Typing indicator */
+      .typing-indicator {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 0;
+      }
+
+      .typing-indicator span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: typingDot 1.4s infinite;
+      }
+
+      .typing-indicator span:nth-child(1) {
+        background: var(--text-tertiary);
+        animation-delay: 0s;
+      }
+
+      .typing-indicator span:nth-child(2) {
+        background: var(--text-muted);
+        animation-delay: 0.2s;
+      }
+
+      .typing-indicator span:nth-child(3) {
+        background: var(--border-muted);
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typingDot {
+        0%, 60%, 100% {
+          opacity: 0.3;
+          transform: translateY(0);
+        }
+        30% {
+          opacity: 1;
+          transform: translateY(-6px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="header-top">
+          <div class="header-left">
+            <div class="logo">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 8V4m0 8V8m0 0H8m4 0h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <rect x="4" y="14" width="6" height="7" rx="1" stroke="currentColor" stroke-width="2" fill="none"/>
+                <rect x="14" y="14" width="6" height="7" rx="1" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </div>
+            <h1>Upsun Docs Assistant</h1>
+          </div>
+          <div class="header-actions">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="1"/>
+              <circle cx="12" cy="5" r="1"/>
+              <circle cx="12" cy="19" r="1"/>
+            </svg>
+          </div>
+        </div>
+        <p>Ask me anything about deploying and managing applications on Upsun</p>
+      </div>
+      <div class="chat-container">
+        <div class="messages" id="messages">
+          <div class="welcome" id="welcome">
+            <div class="welcome-icon">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 8V4m0 8V8m0 0H8m4 0h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <rect x="4" y="14" width="6" height="7" rx="1" stroke="currentColor" stroke-width="2" fill="none"/>
+                <rect x="14" y="14" width="6" height="7" rx="1" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </div>
+            <h2>How can I help you today?</h2>
+            <p>Choose a topic below or type your own question</p>
+            <div class="prompts-grid">
+              <button class="prompt-card" data-prompt="How do I deploy a Node.js application?">
+                <svg stroke="var(--accent-lime)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>How do I deploy a Node.js application?</span>
+              </button>
+              <button class="prompt-card" data-prompt="How do I configure PostgreSQL?">
+                <svg stroke="var(--accent-purple)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse cx="12" cy="5" rx="9" ry="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5M3 12c0 1.66 4 3 9 3s9-1.34 9-3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>How do I configure PostgreSQL?</span>
+              </button>
+              <button class="prompt-card" data-prompt="What is the Upsun CLI?">
+                <svg stroke="var(--accent-orange)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <polyline points="4 17 10 11 4 5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <line x1="12" y1="19" x2="20" y2="19" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>What is the Upsun CLI?</span>
+              </button>
+              <button class="prompt-card" data-prompt="How do environment variables work?">
+                <svg stroke="var(--text-secondary)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.25m5.07 5.07l4.25 4.24M1 12h6m6 0h6M4.22 19.78l4.25-4.24m5.07-5.07l4.24-4.25" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>How do environment variables work?</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="input-container">
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="input"
+              class="input-field"
+              placeholder="Ask a question about Upsun..."
+              autocomplete="off"
+            />
+            <button id="send" class="send-btn">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 19V5m0 0l-7 7m7-7l7 7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <span>RAG Pipeline: OpenAI + Qdrant + LangChain</span>
+        <span class="footer-sep">|</span>
+        <a href="https://docs.upsun.com" target="_blank">Full Documentation</a>
+      </div>
+    </div>
+
+    <script>
+      const messagesEl = document.getElementById("messages");
+      const welcomeEl = document.getElementById("welcome");
+      const inputEl = document.getElementById("input");
+      const sendBtn = document.getElementById("send");
+
+      let conversationHistory = [];
+      let isLoading = false;
+
+      // Bot and user avatar SVGs
+      const botIconSVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8V4m0 8V8m0 0H8m4 0h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><rect x="4" y="14" width="6" height="7" rx="1" stroke="currentColor" stroke-width="2" fill="none"/><rect x="14" y="14" width="6" height="7" rx="1" stroke="currentColor" stroke-width="2" fill="none"/></svg>';
+      const userIconSVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/></svg>';
+      const linkIconSVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke-linecap="round" stroke-linejoin="round"/><polyline points="15 3 21 3 21 9" stroke-linecap="round" stroke-linejoin="round"/><line x1="10" y1="14" x2="21" y2="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      const searchIconSVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+
+      // Enhanced markdown parser
+      function parseMarkdown(text) {
+        var html = text;
+
+        // Escape HTML entities first
+        html = html
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+
+        // Code blocks (``` ... ```)
+        html = html.replace(/```([a-z]*)\n?([\s\S]*?)```/g, function (match, lang, code) {
+          return "<pre><code>" + code + "</code></pre>";
+        });
+
+        // Inline code
+        html = html.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+
+        // Bold (must be before italic to handle ***)
+        html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+        html = html.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+
+        // Italic
+        html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+        html = html.replace(/_([^_]+)_/g, "<em>$1</em>");
+
+        // Headers
+        html = html.replace(/^### (.+)$/gim, "<h3>$1</h3>");
+        html = html.replace(/^## (.+)$/gim, "<h2>$1</h2>");
+        html = html.replace(/^# (.+)$/gim, "<h1>$1</h1>");
+
+        // Links with external icon
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1' + linkIconSVG + '</a>');
+
+        // Lists
+        html = html.replace(/^[\s]*[-*]\s+(.+)$/gim, "<li>$1</li>");
+        html = html.replace(/^[\s]*\d+\.\s+(.+)$/gim, "<li>$1</li>");
+
+        // Wrap consecutive <li> tags in <ul>
+        html = html.replace(/(<li>[\s\S]+?<\/li>)/g, function(match) {
+          return "<ul>" + match + "</ul>";
+        });
+
+        // Blockquotes
+        html = html.replace(/^&gt;\s?(.+)$/gim, "<blockquote>$1</blockquote>");
+
+        return html;
+      }
+
+      function addMessage(role, content) {
+        if (welcomeEl && !welcomeEl.classList.contains("hidden")) {
+          welcomeEl.classList.add("hidden");
+        }
+
+        var messageDiv = document.createElement("div");
+        messageDiv.className = "message " + role;
+
+        var avatar = document.createElement("div");
+        avatar.className = "message-avatar";
+        avatar.innerHTML = role === "user" ? userIconSVG : botIconSVG;
+
+        var contentWrapper = document.createElement("div");
+        contentWrapper.style.display = "flex";
+        contentWrapper.style.flexDirection = "column";
+        contentWrapper.style.gap = "8px";
+        contentWrapper.style.minWidth = "0";
+        contentWrapper.style.maxWidth = "100%";
+
+        var contentDiv = document.createElement("div");
+        contentDiv.className = "message-content";
+        contentDiv.innerHTML = parseMarkdown(content);
+
+        contentWrapper.appendChild(contentDiv);
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(contentWrapper);
+        messagesEl.appendChild(messageDiv);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+
+        return { contentDiv: contentDiv, wrapper: contentWrapper };
+      }
+
+      function renderSources(wrapper, sources) {
+        if (!sources || sources.length === 0) return;
+
+        var panel = document.createElement("div");
+        panel.className = "sources-panel";
+
+        var header = document.createElement("div");
+        header.className = "sources-header";
+        header.innerHTML = searchIconSVG + " Retrieved from Qdrant (" + sources.length + " sources)";
+        panel.appendChild(header);
+
+        sources.forEach(function(source) {
+          var item = document.createElement("div");
+          item.className = "source-item";
+
+          var titleRow = document.createElement("div");
+          titleRow.className = "source-title";
+
+          var link = document.createElement("a");
+          link.href = source.url;
+          link.target = "_blank";
+          // Show breadcrumb if available, fallback to title
+          link.textContent = source.breadcrumb || source.title;
+          titleRow.appendChild(link);
+
+          var score = document.createElement("span");
+          score.className = "source-score";
+          score.textContent = (source.score * 100).toFixed(1) + "%";
+          titleRow.appendChild(score);
+
+          var snippet = document.createElement("div");
+          snippet.className = "source-snippet";
+          snippet.textContent = source.snippet;
+
+          item.appendChild(titleRow);
+          item.appendChild(snippet);
+          panel.appendChild(item);
+        });
+
+        wrapper.insertBefore(panel, wrapper.firstChild);
+      }
+
+      async function sendMessage(message) {
+        if (!message.trim() || isLoading) return;
+
+        isLoading = true;
+        sendBtn.disabled = true;
+        inputEl.value = "";
+
+        addMessage("user", message);
+        var assistantResult = addMessage("assistant", "");
+        var assistantContent = assistantResult.contentDiv;
+        var assistantWrapper = assistantResult.wrapper;
+
+        // Show typing indicator
+        assistantContent.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+
+        var fullResponse = "";
+        var firstChunkReceived = false;
+        var currentEventType = "data";
+
+        try {
+          var response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: message,
+              history: conversationHistory,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("HTTP " + response.status + ": " + response.statusText);
+          }
+
+          var reader = response.body.getReader();
+          var decoder = new TextDecoder();
+          var buffer = "";
+
+          while (true) {
+            var result = await reader.read();
+            var done = result.done;
+            var value = result.value;
+
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            var lines = buffer.split("\n");
+            buffer = lines.pop() || "";
+
+            for (var i = 0; i < lines.length; i++) {
+              var line = lines[i];
+
+              // Handle event type lines
+              if (line.startsWith("event: ")) {
+                currentEventType = line.slice(7).trim();
+                continue;
+              }
+
+              if (line.startsWith("data: ")) {
+                var data = line.slice(6);
+                if (data === "[DONE]") {
+                  conversationHistory.push({ role: "user", content: message });
+                  conversationHistory.push({ role: "assistant", content: fullResponse });
+                  isLoading = false;
+                  sendBtn.disabled = false;
+                  inputEl.focus();
+                  currentEventType = "data";
+                  return;
+                }
+                try {
+                  var parsed = JSON.parse(data);
+
+                  // Handle sources event
+                  if (currentEventType === "sources") {
+                    renderSources(assistantWrapper, parsed);
+                    currentEventType = "data";
+                    continue;
+                  }
+
+                  // Handle regular chunk
+                  fullResponse += parsed;
+
+                  // Remove typing indicator on first chunk
+                  if (!firstChunkReceived) {
+                    firstChunkReceived = true;
+                  }
+
+                  assistantContent.innerHTML = parseMarkdown(fullResponse);
+                  messagesEl.scrollTop = messagesEl.scrollHeight;
+                } catch (err) {
+                  // Skip invalid JSON
+                }
+                currentEventType = "data";
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Chat error:", err);
+          assistantContent.textContent = "Sorry, an error occurred. Please try again.";
+          isLoading = false;
+          sendBtn.disabled = false;
+        }
+      }
+
+      // Event listeners
+      sendBtn.addEventListener("click", function() { sendMessage(inputEl.value); });
+
+      inputEl.addEventListener("keypress", function(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage(inputEl.value);
+        }
+      });
+
+      document.querySelectorAll(".prompt-card").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          var prompt = btn.dataset.prompt;
+          inputEl.value = prompt;
+          sendMessage(prompt);
+        });
+      });
+
+      inputEl.focus();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+applications:
+  opencode:
+    type: "composable:25.11"
+    container_profile: HIGH_MEMORY
+    stack:
+      runtimes:
+        - "nodejs@24"
+    relationships:
+      chrome:
+        service: chrome
+        endpoint: http
+    hooks:
+      build: |
+        set -xe
+        npm install -g opencode-ai
+        npm install -g puppeteer
+
+        # Install Upsun CLI
+        bash scripts/install_upsun_cli.sh
+
+        if [ -f /app/.gitconfig ]; then
+          git config --global init.defaultBranch main
+        fi
+      deploy: |
+        mkdir -p /app/.local/share/opencode /app/.config/opencode /app/.local/share/opencode/storage/project/
+
+        # Setting up auth.json for multiple providers
+        bash scripts/setup_auth.sh
+
+        # Copy default opencode config
+        # [ -f /app/.config/opencode/opencode.json ] || cp opencode.json /app/.config/opencode/
+        # Always override the configuration
+        cp opencode.json /app/.config/opencode/
+        sed -i "s|http://CHROME|$CHROME_SCHEME://$CHROME_IP:$CHROME_PORT|g" /app/.config/opencode/opencode.json
+      
+        # Init project folder
+        if [ ! -d /app/project/.git ]; then
+          cd /app/project && git init 
+        fi
+        
+        # Create opencode project file
+        bash scripts/create_opencode_project.sh
+
+        upsun auth:info
+    web:
+      commands:
+        start: 'opencode --port $PORT --hostname 0.0.0.0 web'
+    mounts: 
+      '.local':
+        source: storage
+        source_path: files/local
+      '.config/opencode':
+        source: storage
+        source_path: files/local
+      # Where opencode will do stuff!
+      'project':
+        source: storage
+        source_path: files/project
+services:
+  chrome:
+    type: chrome-headless:120
+routes:
+   "https://{default}/":
+    type: upstream
+    upstream: "opencode:http"

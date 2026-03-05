@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Markdown Parser</title>
+</head>
+<body>
+    <div id="output"></div>
+    <script>
+      // Enhanced markdown parser
+      function parseMarkdown(text) {
+        let html = text;
+
+        // Escape HTML entities
+        html = html
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+
+        // Code blocks (``` ... ```)
+        html = html.replace(/```([a-z]*)\n?([\s\S]*?)```/g, function (match, lang, code) {
+          return `<pre><code>${code.trim()}</code></pre>`;
+        });
+
+        // Inline code (`code`)
+        html = html.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+
+        // Bold (**text** or __text__)
+        html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+        html = html.replace(/__(.+?)__/g, "<strong>$1</strong>");
+
+        // Italic (*text* or _text_)
+        html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
+        html = html.replace(/_(.+?)_/g, "<em>$1</em>");
+
+        // Links [text](url)
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+        return html;
+      }
+
+      const testText = "Here is **bold** and *italic* with `code` and a [link](https://test.com)";
+      console.log("Input:", testText);
+      console.log("Output:", parseMarkdown(testText));
+      document.getElementById('output').innerHTML = parseMarkdown(testText);
+    </script>
+</body>
+</html>

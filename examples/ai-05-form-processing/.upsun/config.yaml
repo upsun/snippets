@@ -1,0 +1,58 @@
+applications:
+  ticket-classifier:
+    type: "nodejs:22"
+
+    variables:
+      env:
+        OPENAI_MODEL: "gpt-4o-mini"
+
+    build:
+      flavor: none
+
+    dependencies:
+      nodejs:
+        pnpm: "9.15.4"
+
+    hooks:
+      build: |
+        set -e
+        echo "Installing dependencies with pnpm..."
+        pnpm install --frozen-lockfile
+
+        echo "Compiling TypeScript..."
+        pnpm build
+
+        echo "Build complete!"
+
+      deploy: |
+        echo "Deploy hook: Nothing to do"
+
+    web:
+      commands:
+        start: "node dist/index.js"
+      locations:
+        /:
+          passthru: true
+          allow: false
+          scripts: false
+          rules:
+            \.(css|js|gif|jpe?g|png|svg|ico|woff2?|ttf|eot|html)$:
+              allow: true
+
+    mounts:
+      "/.npm":
+        source: "storage"
+        source_path: "npm_cache"
+      "/.pnpm-store":
+        source: "storage"
+        source_path: "pnpm_store"
+
+    relationships: {}
+
+routes:
+  "https://{default}/":
+    type: upstream
+    upstream: "ticket-classifier:http"
+  "https://www.{default}/":
+    type: redirect
+    to: "https://{default}/"

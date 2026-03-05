@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Ticket Classifier | Upsun</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Manrope:wght@500;600&family=Space+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent-lime: #C4F82A;
+      --accent-purple: #7C3AED;
+      --accent-orange: #FA541C;
+      --accent-green: #15803D;
+      --bg-page: #0A0A0A;
+      --bg-card: #18181B;
+      --bg-elevated: #27272A;
+      --border-subtle: #27272A;
+      --border-muted: #3F3F46;
+      --text-primary: #FFFFFF;
+      --text-secondary: #A1A1AA;
+      --text-tertiary: #71717A;
+      --text-muted: #52525B;
+      --text-inverted: #0A0A0A;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-page);
+      min-height: 100vh;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--accent-lime);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+    }
+
+    .logo svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--text-inverted);
+      fill: none;
+      stroke-width: 2;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-family: 'Manrope', sans-serif;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-family: 'Manrope', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 1rem;
+      border: 1px solid var(--border-muted);
+      border-radius: 12px;
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 500;
+      resize: vertical;
+    }
+
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 0.75rem 1.25rem;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent-lime);
+      color: var(--text-inverted);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(196, 248, 42, 0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-muted);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-muted);
+      color: var(--text-primary);
+    }
+
+    .examples {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .example-btn {
+      padding: 0.875rem 1rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      text-align: left;
+      font-size: 0.85rem;
+      border-radius: 12px;
+    }
+
+    .example-btn:hover {
+      background: var(--border-muted);
+      border-color: var(--border-muted);
+      color: var(--text-primary);
+      transform: translateY(-2px);
+    }
+
+    #result {
+      display: none;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .result-item {
+      background: var(--bg-page);
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .result-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.25rem;
+    }
+
+    .result-value {
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .badge-billing { background: #3b82f6; color: #fff; }
+    .badge-technical { background: var(--accent-orange); color: #fff; }
+    .badge-feature-request { background: var(--accent-green); color: #fff; }
+    .badge-bug-report { background: #ef4444; color: #fff; }
+    .badge-account { background: var(--accent-purple); color: #fff; }
+    .badge-general-inquiry { background: var(--text-tertiary); color: #fff; }
+
+    .badge-critical { background: #dc2626; color: #fff; }
+    .badge-high { background: var(--accent-orange); color: #fff; }
+    .badge-medium { background: #eab308; color: #000; }
+    .badge-low { background: var(--accent-lime); color: var(--text-inverted); }
+
+    .badge-positive { background: var(--accent-green); color: #fff; }
+    .badge-neutral { background: var(--text-tertiary); color: #fff; }
+    .badge-negative { background: #ef4444; color: #fff; }
+
+    .list-section {
+      margin-top: 1rem;
+    }
+
+    .list-section h3 {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-lime);
+      margin-bottom: 0.5rem;
+    }
+
+    .list-section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .list-section li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .list-section li:last-child {
+      border-bottom: none;
+    }
+
+    .list-section li::before {
+      content: ">";
+      color: var(--accent-lime);
+      margin-right: 0.5rem;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .json-toggle {
+      margin-top: 1rem;
+    }
+
+    .json-output {
+      display: none;
+      margin-top: 1rem;
+      background: var(--bg-page);
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      overflow-x: auto;
+    }
+
+    .json-output pre {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin: 0;
+      white-space: pre-wrap;
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-tertiary);
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-muted);
+      border-top-color: var(--accent-lime);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 1rem;
+      border-radius: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    footer a {
+      color: var(--accent-purple);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="9" y="3" width="6" height="4" rx="1" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 12h6M9 16h6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1>Support ticket classifier</h1>
+      <p class="subtitle">AI-powered classification and metadata extraction for Upsun support tickets</p>
+    </header>
+
+    <div class="card">
+      <h2>Example tickets</h2>
+      <div class="examples">
+        <button class="example-btn" data-example="billing">Billing issue (upgrade plan)</button>
+        <button class="example-btn" data-example="technical">Technical (deployment failure)</button>
+        <button class="example-btn" data-example="feature">Feature request (autoscaling)</button>
+        <button class="example-btn" data-example="bug">Bug report (CLI error)</button>
+        <button class="example-btn" data-example="account">Account (team access)</button>
+        <button class="example-btn" data-example="general">General inquiry</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Submit a ticket</h2>
+      <form id="ticketForm">
+        <textarea id="ticketInput" placeholder="Paste or type a support ticket here..." required></textarea>
+        <div class="actions">
+          <button type="submit" class="btn-primary" id="submitBtn">Classify ticket</button>
+          <button type="button" class="btn-secondary" id="clearBtn">Clear</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card" id="result">
+      <h2>Classification result</h2>
+      <div id="resultContent"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Powered by OpenAI | Built with <a href="https://upsun.com">Upsun</a></p>
+  </footer>
+
+  <script>
+    const examples = {
+      billing: `Subject: Need to upgrade my plan urgently
+
+Hi Support,
+
+My name is Sarah Chen and I need to upgrade from the Standard plan to Professional immediately. Our application on project ID prj-abc123 is hitting resource limits and we're losing customers.
+
+Current situation:
+- Getting memory errors on the production environment
+- Application crashes during peak hours (10am-2pm EST)
+- We need at least 4GB RAM and 4 CPU cores
+
+I tried to upgrade through the dashboard but got an error about payment method. My card on file might be expired. Can someone help me update this and process the upgrade today?
+
+Our invoice number from last month was INV-2024-78542.
+
+This is blocking our business, please help ASAP!
+
+Thanks,
+Sarah Chen
+sarah.chen@example.com
+Acme Corp`,
+
+      technical: `URGENT: Production deployment failing since this morning
+
+Environment: main (production)
+Project: myapp-prod-xyz789
+Error: Build hook failed with exit code 137
+
+We've been trying to deploy a critical security patch all morning but every deployment fails. The logs show:
+
+[2024-01-15 09:23:45] Building application...
+[2024-01-15 09:25:12] npm install completed
+[2024-01-15 09:26:33] Running build script...
+[2024-01-15 09:28:01] FATAL: Out of memory
+[2024-01-15 09:28:01] Build hook failed with exit code 137
+
+We haven't changed anything in our build process. This was working fine yesterday. The same code deploys fine to our staging environment.
+
+Our production site is running an outdated version with a known security vulnerability. We need this fixed immediately.
+
+Already tried:
+- Clearing build cache
+- Reducing parallel jobs in npm
+- Restarting the environment
+
+Nothing works. Please escalate this.
+
+- DevOps Team`,
+
+      feature: `Feature suggestion: Automatic horizontal scaling
+
+Hello Upsun team,
+
+I've been using Upsun for about 6 months now and I'm really happy with the platform overall. One thing that would make it even better is automatic horizontal scaling based on traffic.
+
+Currently we have to manually scale our application containers when we expect high traffic (like during marketing campaigns or product launches). It would be great if Upsun could:
+
+1. Monitor incoming request rates and response times
+2. Automatically spin up additional containers when thresholds are exceeded
+3. Scale back down during quiet periods to save costs
+4. Allow us to set min/max container limits
+
+I know this is a big ask, but it would really help us handle unpredictable traffic spikes without over-provisioning.
+
+Is this something on your roadmap?
+
+Best regards,
+Mike`,
+
+      bug: `Bug: CLI crashes when listing environments with special characters
+
+Version: upsun-cli 5.2.1
+OS: macOS 14.2
+
+Steps to reproduce:
+1. Create a project with environment named "feature/user-auth"
+2. Run "upsun environment:list"
+3. CLI crashes with stack trace
+
+Expected: List of environments displayed
+Actual: Crash with error "TypeError: Cannot read property 'split' of undefined"
+
+Stack trace:
+TypeError: Cannot read property 'split' of undefined
+    at formatEnvironmentName (/usr/local/lib/node_modules/upsun-cli/lib/format.js:42)
+    at listEnvironments (/usr/local/lib/node_modules/upsun-cli/commands/environment.js:87)
+
+Workaround: Renaming environments to avoid slashes works, but this breaks our Git branch naming convention.
+
+This started happening after updating to version 5.2.1. Version 5.1.0 worked fine.`,
+
+      account: `Help adding team member to project
+
+Hi,
+
+I'm the project owner for our company's Upsun account (org ID: org-techstartup-456). I need to add a new developer to our team but I'm not sure about the permission levels.
+
+The new team member (jamie@techstartup.io) should be able to:
+- View and access all environments
+- Deploy to staging and development
+- NOT deploy to production
+- NOT change billing or project settings
+
+What's the right role for this? I see options for Admin, Developer, and Viewer but I'm not sure which one fits.
+
+Also, can I create a custom role with specific permissions?
+
+Thanks,
+Alex Thompson
+CTO, TechStartup Inc`,
+
+      general: `Question about Upsun vs traditional hosting
+
+Hi there,
+
+I'm evaluating hosting options for a new SaaS product we're building. The stack will be:
+- Node.js API backend
+- PostgreSQL database
+- Redis for caching
+- React frontend (static files)
+
+I've looked at AWS, DigitalOcean, and now Upsun. A few questions:
+
+1. How does pricing compare for a medium-sized application?
+2. Do you support preview environments for pull requests?
+3. What's the typical deployment time?
+4. Can I use my own domain with SSL?
+
+We're a team of 5 developers and expect moderate traffic initially (maybe 10k requests/day).
+
+Would love to understand if Upsun is a good fit before we commit.
+
+Thanks!`
+    };
+
+    const form = document.getElementById('ticketForm');
+    const input = document.getElementById('ticketInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const resultDiv = document.getElementById('result');
+    const resultContent = document.getElementById('resultContent');
+
+    // Example buttons
+    document.querySelectorAll('.example-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.example;
+        input.value = examples[key];
+        input.focus();
+      });
+    });
+
+    // Clear button
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      resultDiv.style.display = 'none';
+      input.focus();
+    });
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const ticket = input.value.trim();
+      if (!ticket) return;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Classifying...';
+      resultDiv.style.display = 'block';
+      resultContent.innerHTML = '<div class="loading"><div class="spinner"></div> Analyzing ticket...</div>';
+
+      try {
+        const response = await fetch('/api/classify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticket })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Classification failed');
+        }
+
+        renderResult(data);
+      } catch (err) {
+        resultContent.innerHTML = `<div class="error">${err.message}</div>`;
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Classify ticket';
+      }
+    });
+
+    function getBadgeClass(type, value) {
+      const v = value.toLowerCase().replace(/\s+/g, '-');
+      return `badge badge-${v}`;
+    }
+
+    function renderResult(data) {
+      const html = `
+        <div class="result-grid">
+          <div class="result-item">
+            <div class="result-label">Category</div>
+            <div class="result-value">
+              <span class="${getBadgeClass('category', data.category)}">${data.category}</span>
+            </div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Urgency</div>
+            <div class="result-value">
+              <span class="${getBadgeClass('urgency', data.urgency)}">${data.urgency}</span>
+            </div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Sentiment</div>
+            <div class="result-value">
+              <span class="${getBadgeClass('sentiment', data.sentiment)}">${data.sentiment}</span>
+            </div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Product/Service</div>
+            <div class="result-value">${data.product || 'Not specified'}</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Customer Name</div>
+            <div class="result-value">${data.customerName || 'Not provided'}</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Customer Email</div>
+            <div class="result-value">${data.customerEmail || 'Not provided'}</div>
+          </div>
+        </div>
+
+        <div class="result-item">
+          <div class="result-label">Summary</div>
+          <div class="result-value">${data.summary}</div>
+        </div>
+
+        ${data.referenceNumbers.length > 0 ? `
+          <div class="list-section">
+            <h3>Reference numbers</h3>
+            <ul>
+              ${data.referenceNumbers.map(ref => `<li>${ref}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        <div class="list-section">
+          <h3>Suggested actions</h3>
+          <ul>
+            ${data.suggestedActions.map(action => `<li>${action}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="json-toggle">
+          <button class="btn-secondary" onclick="toggleJson()">Show JSON response</button>
+        </div>
+        <div class="json-output" id="jsonOutput">
+          <pre>${JSON.stringify(data, null, 2)}</pre>
+        </div>
+      `;
+
+      resultContent.innerHTML = html;
+    }
+
+    function toggleJson() {
+      const output = document.getElementById('jsonOutput');
+      const btn = output.previousElementSibling.querySelector('button');
+      if (output.style.display === 'block') {
+        output.style.display = 'none';
+        btn.textContent = 'Show JSON response';
+      } else {
+        output.style.display = 'block';
+        btn.textContent = 'Hide JSON response';
+      }
+    }
+  </script>
+</body>
+</html>
